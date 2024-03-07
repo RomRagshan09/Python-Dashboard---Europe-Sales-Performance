@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 
 # Load dataset
-data = pd.read_csv(r"F:\HND.DS\py.dashboard\Europe Sales Records.csv")
+data = pd.read_csv(r"F:\HND.DS\py.dashboard\europe_sales_records_2012_2017.csv")
 data['Order Date'] = pd.to_datetime(data['Order Date'])
 
 # line Dropdown options
@@ -63,19 +63,19 @@ footer = html.Div(
 # Tab 1
 tab1_layout = html.Div(
     children=[
-        html.H2("Supermarket Sales Analysis Dashboard", style={'text-align': 'center', 'margin-top': '20px', 'font-size': '40px', 'font-weight': 'bold'}),
-        html.P("This dashboard provides insights into the performance and profitability of a supermarket in the first quarter of 2019.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '25px'}),
-        html.P("The dataset used in this analysis contains records from three branches of the Myanmar supermarket company over three months.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '25px'}),
+        html.H2("Europe Sales Records Analysis Dashboard", style={'text-align': 'center', 'margin-top': '20px', 'font-size': '40px', 'font-weight': 'bold'}),
+        html.P("This dashboard provides insights into the performance and profitability of sales across countries in the Europe region from the period of 2010 to 2017.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '23px'}),
+        html.P("The dataset used in this analysis contains records from multiple sales and includes details on order dates, quantities sold, pricing, and profitability.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '23px'}),
 
-        html.H3("Through this analysis, the supermarket can effectively:", style={'text-align': 'center', 'margin-top': '40px', 'font-size': '28px', 'font-weight': 'bold'}),
-        html.Ul(style={'text-align': 'left', 'margin-left': '75px', 'font-size': '25px', 'margin-top': '40px'},
+        html.H3("Through this analysis, the supermarket can effectively:", style={'text-align': 'center', 'margin-top': '40px', 'font-size': '27px', 'font-weight': 'bold'}),
+        html.Ul(style={'text-align': 'left', 'margin-left': '75px', 'font-size': '23px', 'margin-top': '40px'},
                 children=[
-                    html.Li("Evaluate the profitability of different product lines"),
-                    html.Li("Assess the quantity of products sold to customers"),
-                    html.Li("Determine which product lines are more popular among male and female demographics"),
-                    html.Li("Analyze trends in product line popularity across different branches"),
-                    html.Li("Examine the gross income compared to the cost of goods sold (COGS) to understand profitability better"),
-                    html.Li("Track and analyze trends in gross income over the quarter to identify growth strategy")
+                    html.Li("Analyze which item types generate the most revenue in each country,"),
+                    html.Li("Analyze the quantity of products sold for each item type across all countries to identify the countries where specific products have high sales volumes,"),
+                    html.Li("Determine the country-item combinations with the highest order priority,"),
+                    html.Li("Identifying which item types have high priority in each country,"),
+                    html.Li("Analyze the total profit compared to the total cost to understand profitability,"),
+                    html.Li("Study the trends in total revenue and total profit over the years to identify growth strategies.")
                 ])
     ]
 )
@@ -180,8 +180,7 @@ tabs = dcc.Tabs(id='tabs', value='tab-1', children=[
 
 # Layout of the app
 app.layout = html.Div(children=[
-    title, footer, tabs
-])
+    title, footer, tabs])
 #call back for updating line graph
 @app.callback(
     Output(component_id='graphoutput', component_property='figure'),
@@ -202,7 +201,7 @@ def update_graph(selected_variable, date_range, selected_categories):
     # Group by selected variable
     grouped_data = filtered_data.groupby(filtered_data['Order Date'].dt.year)[selected_variable].sum().reset_index()
 
-    fig = px.line(grouped_data, x='Order Date', y=selected_variable, title=f'{selected_variable.capitalize()} by Year', color_discrete_sequence=['#26538d'])
+    fig = px.line(grouped_data, x='Order Date', y=selected_variable, title=f'{selected_variable.capitalize()} by year', color_discrete_sequence=['#26538d'])
     fig.update_layout(plot_bgcolor='#d7fffd')
     fig.update_traces(line=dict(width=4))
 
