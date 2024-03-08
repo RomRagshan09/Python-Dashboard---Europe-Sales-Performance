@@ -29,53 +29,55 @@ Item_Type = [
 # Define dropdown options for product categories
 category_dropdown_options = [{'label': category, 'value': category} for category in Item_Type]
 
-# Initialize Dash app
-app = dash.Dash(__name__)
+# Initialize app
+external_stylesheets = ['D:/HND/DV-assignment/assets/edit.css']  # Adjust the path according to your folder structure
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = "Supermarket Sales Dashboard"
 
-# Add title
+# Define default bar graph
+default_item_counts = data.groupby('Item Type')['Units Sold'].sum().reset_index()
+default_bar_graph = px.bar(default_item_counts, x='Item Type', y='Units Sold', title="Product Items Ordered", labels={'x': 'Item Type', 'y': 'Units Sold'})
+
 title = html.Div(
     children=[
         html.H1(
             "SUPERMARKET SALES ANALYSIS",
-            style={'font-size': '50px', 'text-align': 'center', 'font-weight': 'bold', 'color': 'white',
-                   'backgroundColor': 'black', 'margin': '8px', 'padding': '5px'}
+            className='supermarket-title'
         )
     ]
 )
+
 
 # Add footer
 footer = html.Div(
     children=[
         html.Div(
-            [
-                html.P('Designed By: N.ARJUN -005 & C.RAGSHAN -009', style={'font-size': '12px', 'font-weight': 'bold', 'color': 'white','fontFamily': 'Roboto'}),
+            children=[
+                html.P('Designed By: N.ARJUN -005 & C.RAGSHAN -009', className='footer-text'),
             ],
-            style={'border': '2px solid #ccc', 'width': '100%', 'margin': 'auto',
-                'background-color': 'purple', 'padding': '2px', 'border-radius': '1px', 'text-align': 'center','fontStyle': 'italic'}
+            className='footer-content'
         )
     ],
-    style={'position': 'fixed', 'bottom': '9px', 'left': '10px', 'z-index': '999'}
+    className='footer-container'
 )
-
 # Define tab content
 
 # Tab 1
 tab1_layout = html.Div(
     children=[
-        html.H2("Europe Sales Records Analysis Dashboard", style={'text-align': 'center', 'margin-top': '20px', 'font-size': '40px', 'font-weight': 'bold'}),
-        html.P("This dashboard provides insights into the performance and profitability of sales across countries in the Europe region from the period of 2010 to 2017.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '23px'}),
-        html.P("The dataset used in this analysis contains records from multiple sales and includes details on order dates, quantities sold, pricing, and profitability.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '23px'}),
+        html.H2("Supermarket Sales Analysis Dashboard", style={'text-align': 'center', 'margin-top': '20px', 'font-size': '40px', 'font-weight': 'bold'}),
+        html.P("This dashboard provides insights into the performance and profitability of a supermarket in the first quarter of 2019.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '25px'}),
+        html.P("The dataset used in this analysis contains records from three branches of the Myanmar supermarket company over three months.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '25px'}),
 
-        html.H3("Through this analysis, the supermarket can effectively:", style={'text-align': 'center', 'margin-top': '40px', 'font-size': '27px', 'font-weight': 'bold'}),
-        html.Ul(style={'text-align': 'left', 'margin-left': '75px', 'font-size': '23px', 'margin-top': '40px'},
+        html.H3("Through this analysis, the supermarket can effectively:", style={'text-align': 'center', 'margin-top': '40px', 'font-size': '28px', 'font-weight': 'bold'}),
+        html.Ul(style={'text-align': 'left', 'margin-left': '75px', 'font-size': '25px', 'margin-top': '40px'},
                 children=[
-                    html.Li("Analyze which item types generate the most revenue in each country,"),
-                    html.Li("Analyze the quantity of products sold for each item type across all countries to identify the countries where specific products have high sales volumes,"),
-                    html.Li("Determine the country-item combinations with the highest order priority,"),
-                    html.Li("Identifying which item types have high priority in each country,"),
-                    html.Li("Analyze the total profit compared to the total cost to understand profitability,"),
-                    html.Li("Study the trends in total revenue and total profit over the years to identify growth strategies.")
+                    html.Li("Evaluate the profitability of different product lines"),
+                    html.Li("Assess the quantity of products sold to customers"),
+                    html.Li("Determine which product lines are more popular among male and female demographics"),
+                    html.Li("Analyze trends in product line popularity across different branches"),
+                    html.Li("Examine the gross income compared to the cost of goods sold (COGS) to understand profitability better"),
+                    html.Li("Track and analyze trends in gross income over the quarter to identify growth strategy")
                 ])
     ]
 )
@@ -164,8 +166,24 @@ tab3_layout = html.Div([
     dcc.Graph(id='scatter-plot'),
 ])
 
+# Tab 4
+tab4_layout = html.Div([
+    html.Div([
+        html.H3("Europe Map"),
+        dcc.Graph(
+            id='europe-map',
+            config={'displayModeBar': False},
+            style={'height': '100vh', 'width': '100%'},
+            figure=px.choropleth(data, locations="Country", locationmode="country names", hover_name="Country", title="Europe Map").update_geos(visible=False)
+        ),
+        html.Div(id='selected-country-info')
+    ], style={'width': '50%', 'height': '100vh', 'float': 'left'}),
+    html.Div([
+        dcc.Graph(id='country-item-bar', figure=default_bar_graph, style={'width': '90%', 'height': '70vh'})
+    ], style={'width': '50%', 'height': '100vh', 'overflow-y': 'auto', 'overflow-x': 'hidden'})
+])
 
-tab4_layout = html.Div("Content of Tab 4")
+# Tab 5
 tab5_layout = html.Div("Content of Tab 5")
 
 # Define tabs
@@ -180,7 +198,9 @@ tabs = dcc.Tabs(id='tabs', value='tab-1', children=[
 
 # Layout of the app
 app.layout = html.Div(children=[
-    title, footer, tabs])
+    title, footer, tabs
+])
+
 #call back for updating line graph
 @app.callback(
     Output(component_id='graphoutput', component_property='figure'),
@@ -245,6 +265,31 @@ def update_scatter_plot(selected_categories, selected_variable, date_range):
 
     return fig
 
+
+
+# Callback to update the bar graph based on the clicked country
+@app.callback(
+    Output('country-item-bar', 'figure'),
+    [Input('europe-map', 'clickData')]
+)
+def update_bar_graph(clickData):
+    if clickData is None:
+        # If no country is clicked, return the default bar graph
+        return default_bar_graph
+    else:
+        # Extract the clicked country from the click data
+        selected_country = clickData['points'][0]['location']
+
+        # Filter the data for the selected country
+        country_data = data[data['Country'] == selected_country]
+
+        # Group the data by item type and calculate the total units sold
+        item_counts = country_data.groupby('Item Type')['Units Sold'].sum().reset_index()
+
+        # Create the bar graph
+        fig = px.bar(item_counts, x='Item Type', y='Units Sold', title=f'Product Items Ordered in {selected_country}')
+
+        return fig
 
 if __name__ == '__main__':
     app.run_server(debug=True)
