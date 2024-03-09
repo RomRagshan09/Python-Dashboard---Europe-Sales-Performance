@@ -1,8 +1,8 @@
 import dash
 from dash import dcc, html
 import pandas as pd
-from dash.dependencies import Input, Output
 import plotly.express as px
+from dash.dependencies import Input, Output
 
 # Load dataset
 data = pd.read_csv(r"F:\HND.DS\py.dashboard\europe_sales_records_2012_2017.csv")
@@ -18,7 +18,7 @@ scatter_dropdown_options = [
     {'label': 'Units Sold', 'value': 'Units Sold'},
     {'label': 'Total Revenue', 'value': 'Total Revenue'},
     {'label': 'Total Cost', 'value': 'Total Cost'}
-]                    
+]
 
 # Define product categories
 Item_Type = [
@@ -65,49 +65,51 @@ footer = html.Div(
 # Tab 1
 tab1_layout = html.Div(
     children=[
-        html.H2("Supermarket Sales Analysis Dashboard", style={'text-align': 'center', 'margin-top': '20px', 'font-size': '40px', 'font-weight': 'bold'}),
-        html.P("This dashboard provides insights into the performance and profitability of a supermarket in the first quarter of 2019.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '25px'}),
-        html.P("The dataset used in this analysis contains records from three branches of the Myanmar supermarket company over three months.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '25px'}),
+        html.H2("Europe Sales Records Analysis Dashboard", style={'text-align': 'center', 'margin-top': '20px', 'font-size': '40px', 'font-weight': 'bold'}),
+        html.P("This dashboard provides insights into the performance and profitability of sales across countries in the Europe region from the period of 2010 to 2017.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '23px'}),
+        html.P("The dataset used in this analysis contains records from multiple sales and includes details on order dates, quantities sold, pricing, and profitability.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '23px'}),
 
-        html.H3("Through this analysis, the supermarket can effectively:", style={'text-align': 'center', 'margin-top': '40px', 'font-size': '28px', 'font-weight': 'bold'}),
-        html.Ul(style={'text-align': 'left', 'margin-left': '75px', 'font-size': '25px', 'margin-top': '40px'},
+        html.H3("Through this analysis, the supermarket can effectively:", style={'text-align': 'center', 'margin-top': '40px', 'font-size': '27px', 'font-weight': 'bold'}),
+        html.Ul(style={'text-align': 'left', 'margin-left': '75px', 'font-size': '23px', 'margin-top': '40px'},
                 children=[
-                    html.Li("Evaluate the profitability of different product lines"),
-                    html.Li("Assess the quantity of products sold to customers"),
-                    html.Li("Determine which product lines are more popular among male and female demographics"),
-                    html.Li("Analyze trends in product line popularity across different branches"),
-                    html.Li("Examine the gross income compared to the cost of goods sold (COGS) to understand profitability better"),
-                    html.Li("Track and analyze trends in gross income over the quarter to identify growth strategy")
+                    html.Li("Analyze which item types generate the most revenue in each country,"),
+                    html.Li("Analyze the quantity of products sold for each item type across all countries to identify the countries where specific products have high sales volumes,"),
+                    html.Li("Determine the country-item combinations with the highest order priority,"),
+                    html.Li("Identifying which item types have high priority in each country,"),
+                    html.Li("Analyze the total profit compared to the total cost to understand profitability,"),
+                    html.Li("Study the trends in total revenue and total profit over the years to identify growth strategies.")
                 ])
     ]
 )
 
 # Tab 2
 tab2_layout = html.Div([
-        html.Div([
-            html.H3("Select Variable:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
+    html.Div([
+        html.H3("Select Variable:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
+                                            'color': 'black', 'margin': '6px', 'padding': '4px'}),
+        dcc.Dropdown(
+            id='Line-variable-dropdown',
+            options=dropdown_options,
+            value='Total Revenue'  # Default selection
+        ),
+    ], style={'width': '45%', 'display': 'inline-block', 'float': 'left', 'left': '1%'}),  # Left side
+
+    html.Div([
+        html.H3("Select Product Categories:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
+                                                        'color': 'black', 'margin': '6px', 'padding': '4px'}),
+        dcc.Dropdown(
+            id='Item_Type',
+            options=category_dropdown_options,
+            multi=True,  # Allow multiple selections
+            value=[]  # Default value
+        ),
+    ], style={'width': '45%', 'display': 'inline-block', 'float': 'right', 'right': '1%'}),  # Right side
+
+    html.Div([
+        html.H3("Select Date Range:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
                                                 'color': 'black', 'margin': '6px', 'padding': '4px'}),
-            dcc.Dropdown(
-                id='Line-variable-dropdown',
-                options=dropdown_options,
-                value='Total Revenue'  # Default selection
-            ),
-        ], style={'width': '45%', 'display': 'inline-block', 'right': '1%', 'float': 'right'}),
-        html.Div([
-            html.H3("Select Product Categories:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
-                                                            'color': 'black', 'margin': '6px', 'padding': '4px'}),
-            dcc.Dropdown(
-                id='Item_Type',
-                options=category_dropdown_options,
-                multi=True,  # Allow multiple selections
-                value=[]  # Default value
-            ),
-        ], style={'width': '45%', 'display': 'inline-block', 'left': '1%'}),
-    
-        html.Div([
-            html.H3("Select Date Range:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
-                                                    'color': 'black', 'margin': '6px', 'padding': '4px'}),
-            dcc.RangeSlider(
+
+        dcc.RangeSlider(
                 id='date-slider',
                 min=data['Order Date'].min().timestamp(),
                 max=data['Order Date'].max().timestamp(),
@@ -124,16 +126,18 @@ tab2_layout = html.Div([
 
 # Tab 3
 tab3_layout = html.Div([
-    # Dropdown for selecting variable
+    # Radio button for selecting variable
     html.Div([
         html.H3("Select Variable:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
                                             'color': 'black', 'margin': '6px', 'padding': '4px'}),
-        dcc.Dropdown(
-            id='variable-dropdown',
+        dcc.RadioItems(
+            id='variable-radio',
             options=scatter_dropdown_options,
-            value='Total Revenue'  # Default selection
+            value='Total Revenue',  # Default selection
+            labelStyle={'display': 'inline-block', 'margin-right': '10px'}  # Display options horizontally
         ),
-    ], style={'width': '45%', 'display': 'inline-block', 'right': '1%', 'float': 'right'}),
+    ], style={'width': '45%', 'display': 'inline-block', 'float': 'left'}),
+
 
     # Dropdown for selecting product categories
     html.Div([
@@ -145,7 +149,7 @@ tab3_layout = html.Div([
             multi=True,  # Allow multiple selections
             value=[]  # Default value
         ),
-    ], style={'width': '45%', 'display': 'inline-block', 'left': '1%'}),
+    ], style={'width': '45%', 'display': 'inline-block', 'float': 'right', 'right': '1%'}),
 
     # Date slider
     html.Div([
@@ -183,8 +187,18 @@ tab4_layout = html.Div([
     ], style={'width': '50%', 'height': '100vh', 'overflow-y': 'auto', 'overflow-x': 'hidden'})
 ])
 
+
 # Tab 5
-tab5_layout = html.Div("Content of Tab 5")
+tab5_layout = html.Div([
+    html.H3("Pie Chart"),
+    dcc.Graph(
+        id='pie-chart',
+        figure=px.pie(data, names='Item Type', values='Units Sold', title='Pie Chart').update_traces(textinfo='percent+label'),
+        style={'width': '50%', 'height': '70vh', 'float': 'left'}
+    ),
+    dcc.Graph(id='line-chart', style={'width': '50%', 'height': '70vh', 'float': 'right'})
+])
+
 
 # Define tabs
 tabs = dcc.Tabs(id='tabs', value='tab-1', children=[
@@ -235,7 +249,7 @@ def update_graph(selected_variable, date_range, selected_categories):
 @app.callback(
     Output(component_id='scatter-plot', component_property='figure'),
     [Input(component_id='product-categories-scatter', component_property='value'),
-     Input(component_id='variable-dropdown', component_property='value'),
+     Input(component_id='variable-radio', component_property='value'),
      Input(component_id='date-slider-scatter', component_property='value')]
 )
 def update_scatter_plot(selected_categories, selected_variable, date_range):
@@ -289,6 +303,36 @@ def update_bar_graph(clickData):
         # Create the bar graph
         fig = px.bar(item_counts, x='Item Type', y='Units Sold', title=f'Product Items Ordered in {selected_country}')
 
+        return fig
+    
+# Callback to update the line chart based on the selection in the pie chart
+@app.callback(
+    Output('line-chart', 'figure'),
+    [Input('pie-chart', 'clickData')]
+)
+def update_line_chart(clickData):
+    if clickData is None:
+        # If no data is clicked on the pie chart, show the default line chart
+        default_data = data.groupby('Order Date').agg({'Total Revenue': 'sum', 'Total Profit': 'sum'}).reset_index()
+        default_fig = px.line(default_data, x='Order Date', y=['Total Revenue', 'Total Profit'], title='Total Revenue and Profit Over Time')
+        default_fig.update_xaxes(tickformat='%Y')  # Show only the year on the x-axis
+        default_fig.update_layout(xaxis_title='Order Date', yaxis_title='Amount')
+        return default_fig
+    else:
+        # Extract the selected item type from the click data
+        selected_item_type = clickData['points'][0]['label']
+        
+        # Filter the data for the selected item type
+        filtered_data = data[data['Item Type'] == selected_item_type]
+        
+        # Group the filtered data by order date and calculate the total revenue and profit
+        grouped_data = filtered_data.groupby(filtered_data['Order Date'].dt.year)[['Total Revenue', 'Total Profit']].sum().reset_index()
+        
+        # Create the line chart
+        fig = px.line(grouped_data, x='Order Date', y=['Total Revenue', 'Total Profit'], 
+                      title=f'Total Revenue and Profit Over Time for {selected_item_type}')
+        fig.update_xaxes(title_text="Year")
+        fig.update_yaxes(title_text="Amount")
         return fig
 
 if __name__ == '__main__':
