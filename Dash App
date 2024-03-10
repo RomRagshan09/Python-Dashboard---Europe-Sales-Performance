@@ -166,14 +166,21 @@ tab4_layout = html.Div([
 
 # Tab 5
 tab5_layout = html.Div([
-    html.H3("Pie Chart"),
-    dcc.Graph(
-        id='pie-chart',
-        figure=px.pie(data, names='Item Type', values='Units Sold', title='Pie Chart').update_traces(textinfo='percent+label'),
-        style={'width': '50%', 'height': '70vh', 'float': 'left'}
-    ),
-    dcc.Graph(id='line-chart', style={'width': '50%', 'height': '70vh', 'float': 'right'})
+    html.Div([
+        html.H3("Pie Chart"),
+        dcc.Graph(
+            id='pie-chart',
+            figure=px.pie(data, names='Item Type', values='Units Sold', title='Pie Chart').update_traces(textinfo='percent+label'),
+            style={'width': '50%', 'height': '120vh', 'float': 'left'}
+        ),
+        dcc.Graph(id='item-order-priority-bar', style={'width': '50%', 'height': '50vh', 'float': 'right'})
+    ]),
+    html.Div([
+        html.H3("Line Chart"),
+        dcc.Graph(id='line-chart', style={'width': '50%', 'height': '65vh', 'float': 'right'})
+    ])
 ])
+
 
 
 # Define tabs
@@ -268,19 +275,32 @@ def update_bar_graph(clickData):
 
         return fig
     
-# Callback to update the line chart based on the selection in the pie chart
+# Callback to update the line chart and item order priority bar based on the selection in the pie chart
 @app.callback(
-    Output('line-chart', 'figure'),
+    [Output('line-chart', 'figure'),
+     Output('item-order-priority-bar', 'figure')],
     [Input('pie-chart', 'clickData')]
 )
-def update_line_chart(clickData):
+def update_charts(clickData):
     if clickData is None:
-        # If no data is clicked on the pie chart, show the default line chart
+        # If no data is clicked on the pie chart, show the default line chart and bar graph for all item types
         default_data = data.groupby('Order Date').agg({'Total Revenue': 'sum', 'Total Profit': 'sum'}).reset_index()
-        default_fig = px.line(default_data, x='Order Date', y=['Total Revenue', 'Total Profit'], title='Total Revenue and Profit Over Time')
-        default_fig.update_xaxes(tickformat='%Y')  # Show only the year on the x-axis
-        default_fig.update_layout(xaxis_title='Order Date', yaxis_title='Amount')
-        return default_fig
+        default_line_fig = px.line(default_data, x='Order Date', y=['Total Revenue', 'Total Profit'], title='Total Revenue and Profit Over Time')
+        default_line_fig.update_xaxes(tickformat='%Y')  # Show only the year on the x-axis
+        default_line_fig.update_layout(xaxis_title='Order Date', yaxis_title='Amount')
+        
+        # Calculate the default order priority distribution for all item types
+        default_order_priority_counts = data['Order Priority'].value_counts().reset_index()
+        default_order_priority_counts.columns = ['Order Priority', 'Count']
+        
+        # Create the default bar graph for item order priority
+        default_bar_fig = px.bar(default_order_priority_counts, x='Order Priority', y='Count', 
+                                 title='Order Priority Distribution for All Item Types')
+        default_bar_fig.update_xaxes(title_text="Order Priority")
+        default_bar_fig.update_yaxes(title_text="Count")
+        
+        return default_line_fig, default_bar_fig
+
     else:
         # Extract the selected item type from the click data
         selected_item_type = clickData['points'][0]['label']
@@ -292,11 +312,23 @@ def update_line_chart(clickData):
         grouped_data = filtered_data.groupby(filtered_data['Order Date'].dt.year)[['Total Revenue', 'Total Profit']].sum().reset_index()
         
         # Create the line chart
-        fig = px.line(grouped_data, x='Order Date', y=['Total Revenue', 'Total Profit'], 
-                      title=f'Total Revenue and Profit Over Time for {selected_item_type}')
-        fig.update_xaxes(title_text="Year")
-        fig.update_yaxes(title_text="Amount")
-        return fig
+        line_fig = px.line(grouped_data, x='Order Date', y=['Total Revenue', 'Total Profit'], 
+                           title=f'Total Revenue and Profit Over Time for {selected_item_type}')
+        line_fig.update_xaxes(title_text="Year")
+        line_fig.update_yaxes(title_text="Amount")
+        
+        # Group the filtered data by order priority and calculate the count
+        order_priority_counts = filtered_data['Order Priority'].value_counts().reset_index()
+        order_priority_counts.columns = ['Order Priority', 'Count']
+        
+        # Create the bar graph for item order priority
+        bar_fig = px.bar(order_priority_counts, x='Order Priority', y='Count', 
+                         title=f'Order Priority Distribution for {selected_item_type}')
+        bar_fig.update_xaxes(title_text="Order Priority")
+        bar_fig.update_yaxes(title_text="Count")
+        
+        return line_fig, bar_fig
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
