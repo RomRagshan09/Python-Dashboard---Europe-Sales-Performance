@@ -15,11 +15,10 @@ dropdown_options = [{'label': 'Total Revenue', 'value': 'Total Revenue'},
 
 # scatter drop down option
 scatter_dropdown_options = [
+    {'label': 'Total Profit', 'value': 'Total Profit'},
     {'label': 'Units Sold', 'value': 'Units Sold'},
-    {'label': 'Total Revenue', 'value': 'Total Revenue'},
     {'label': 'Total Cost', 'value': 'Total Cost'}
 ]
-
 # Define product categories
 Item_Type = [
     'Beverages', 'Clothes', 'Cereal', 'Office Supplies', 'Vegetables', 'Meat',
@@ -86,24 +85,13 @@ tab1_layout = html.Div(
 tab2_layout = html.Div([
     html.Div([
         html.H3("Select Variable:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
-                                            'color': 'black', 'margin': '6px', 'padding': '4px'}),
+                                            'color': 'black', 'margin': '10px', 'padding': '4px'}),
         dcc.Dropdown(
             id='Line-variable-dropdown',
             options=dropdown_options,
             value='Total Revenue'  # Default selection
         ),
-    ], style={'width': '45%', 'display': 'inline-block', 'float': 'left', 'left': '1%'}),  # Left side
-
-    html.Div([
-        html.H3("Select Product Categories:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
-                                                        'color': 'black', 'margin': '6px', 'padding': '4px'}),
-        dcc.Dropdown(
-            id='Item_Type',
-            options=category_dropdown_options,
-            multi=True,  # Allow multiple selections
-            value=[]  # Default value
-        ),
-    ], style={'width': '45%', 'display': 'inline-block', 'float': 'right', 'right': '1%'}),  # Right side
+    ], style={'width': '30%', 'display': 'inline-block', 'float': 'left', 'left': '1%'}),  # Left side
 
     html.Div([
         html.H3("Select Date Range:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
@@ -124,32 +112,20 @@ tab2_layout = html.Div([
     ])
 
 
+
 # Tab 3
 tab3_layout = html.Div([
     # Radio button for selecting variable
     html.Div([
-        html.H3("Select Variable:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
+        html.H3("Select Variable:", style={'font-size': '20px', 'text-align': 'left', 'font-weight': 'bold',
                                             'color': 'black', 'margin': '6px', 'padding': '4px'}),
         dcc.RadioItems(
             id='variable-radio',
             options=scatter_dropdown_options,
-            value='Total Revenue',  # Default selection
+            value='Total Profit',  # Default selection
             labelStyle={'display': 'inline-block', 'margin-right': '10px'}  # Display options horizontally
         ),
     ], style={'width': '45%', 'display': 'inline-block', 'float': 'left'}),
-
-
-    # Dropdown for selecting product categories
-    html.Div([
-        html.H3("Select Product Categories:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
-                                                      'color': 'black', 'margin': '6px', 'padding': '4px'}),
-        dcc.Dropdown(
-            id='product-categories-scatter',
-            options=category_dropdown_options,
-            multi=True,  # Allow multiple selections
-            value=[]  # Default value
-        ),
-    ], style={'width': '45%', 'display': 'inline-block', 'float': 'right', 'right': '1%'}),
 
     # Date slider
     html.Div([
@@ -215,22 +191,16 @@ app.layout = html.Div(children=[
     title, footer, tabs
 ])
 
-#call back for updating line graph
+# Callback for updating line graph in Tab 2
 @app.callback(
     Output(component_id='graphoutput', component_property='figure'),
     [Input(component_id='Line-variable-dropdown', component_property='value'),
-     Input(component_id='date-slider', component_property='value'),
-     Input(component_id='Item_Type', component_property='value')]
+     Input(component_id='date-slider', component_property='value')]
 )
-
-def update_graph(selected_variable, date_range, selected_categories):
+def update_graph(selected_variable, date_range):
     start_date = pd.to_datetime(date_range[0], unit='s')
     end_date = pd.to_datetime(date_range[1], unit='s')
     filtered_data = data[(data['Order Date'] >= start_date) & (data['Order Date'] <= end_date)]
-
-    # Filter data based on selected product categories
-    if selected_categories:
-        filtered_data = filtered_data[filtered_data['Item Type'].isin(selected_categories)]
 
     # Group by selected variable
     grouped_data = filtered_data.groupby(filtered_data['Order Date'].dt.year)[selected_variable].sum().reset_index()
@@ -245,36 +215,29 @@ def update_graph(selected_variable, date_range, selected_categories):
                      range=[grouped_data[selected_variable].min(), grouped_data[selected_variable].max()])
     return fig
 
-## Callback for updating scatter plot in Tab 3
+# Callback for updating scatter plot in Tab 3
 @app.callback(
     Output(component_id='scatter-plot', component_property='figure'),
-    [Input(component_id='product-categories-scatter', component_property='value'),
-     Input(component_id='variable-radio', component_property='value'),
+    [Input(component_id='variable-radio', component_property='value'),
      Input(component_id='date-slider-scatter', component_property='value')]
 )
-def update_scatter_plot(selected_categories, selected_variable, date_range):
-    # Filter data based on selected product categories and date range
+def update_scatter_plot(selected_variable, date_range):
+    # Filter data based on date range
     start_date = pd.to_datetime(date_range[0], unit='s')
     end_date = pd.to_datetime(date_range[1], unit='s')
-    
-    if selected_categories:  # If any product category is selected
-        filtered_data = data[(data['Item Type'].isin(selected_categories)) & 
-                             (data['Order Date'] >= start_date) & 
-                             (data['Order Date'] <= end_date)]
-    else:  # If no product category is selected, consider all products
-        filtered_data = data[(data['Order Date'] >= start_date) & 
-                             (data['Order Date'] <= end_date)]
+    filtered_data = data[(data['Order Date'] >= start_date) & (data['Order Date'] <= end_date)]
 
     # Create scatter plot
-    fig = px.scatter(filtered_data, x='Total Profit', y=selected_variable,
-                     title=f'Scatter Plot: Total Profit vs {selected_variable}')
+    fig = px.scatter(filtered_data, x='Total Revenue', y=selected_variable,
+                     title=f'Scatter Plot: Total Revenue vs {selected_variable}',
+                     hover_name='Item Type')  # Include Item Type in hover
 
     # Calculate correlation
-    correlation = filtered_data['Total Profit'].corr(filtered_data[selected_variable])
+    correlation = filtered_data['Total Revenue'].corr(filtered_data[selected_variable])
 
     # Update layout
-    fig.update_layout(title=f'Scatter Plot: Total Profit vs {selected_variable} (Correlation: {correlation:.2f})')
-    fig.update_xaxes(title_text="Total Profit")
+    fig.update_layout(title=f'Scatter Plot: Total Revenue vs {selected_variable} (Correlation: {correlation:.2f})')
+    fig.update_xaxes(title_text="Total Revenue")
     fig.update_yaxes(title_text=selected_variable.capitalize())
 
     return fig
