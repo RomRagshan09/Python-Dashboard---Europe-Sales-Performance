@@ -1,0 +1,61 @@
+/* Title styele */
+.supermarket-title {
+    font-size: 50px;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    background-color: black;
+    margin: 8px;
+    padding: 5px;
+}
+/* Footer styele */
+.footer-container {
+    position: fixed;
+    bottom: 9px;
+    left: 10px;
+    z-index: 999;
+}
+
+.footer-content {
+    border: 2px solid #ccc;
+    width: 100%;
+    margin: auto;
+    background-color: purple;
+    padding: 2px;
+    border-radius: 1px;
+    text-align: center;
+    font-style: italic;
+}
+
+.footer-text {
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    font-family: Roboto;
+}
+
+/* ######Tab2###### */
+.Tab_sub_title {
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+    color: black;
+    margin: 6px;
+    padding: 4px;
+}
+.Tab_bar {
+    background-color: #00ffff;
+    color: black;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 25px;
+}
+.Tab_layout {
+    font-family: Times New Roman;
+    padding: 5px;
+    width: 60%;
+    margin: auto;
+    background-color: #1b2431;
+    color: #fe0002;
+    border-radius: 15px;
+}
