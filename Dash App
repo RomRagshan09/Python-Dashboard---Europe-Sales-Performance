@@ -5,7 +5,7 @@ import plotly.express as px
 from dash.dependencies import Input, Output
 
 # Load dataset
-data = pd.read_csv(r"D:\HND\DV-assignment\europe_sales_records_2012_2017.csv")
+data = pd.read_csv("europe_sales_records_2012_2017.csv")
 data['Order Date'] = pd.to_datetime(data['Order Date'])
 
 # line Dropdown options
