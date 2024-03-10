@@ -5,7 +5,7 @@ import plotly.express as px
 from dash.dependencies import Input, Output
 
 # Load dataset
-data = pd.read_csv(r"F:\HND.DS\py.dashboard\europe_sales_records_2012_2017.csv")
+data = pd.read_csv(r"D:\HND\DV-assignment\europe_sales_records_2012_2017.csv")
 data['Order Date'] = pd.to_datetime(data['Order Date'])
 
 # line Dropdown options
@@ -30,7 +30,7 @@ Item_Type = [
 category_dropdown_options = [{'label': category, 'value': category} for category in Item_Type]
 
 # Initialize app
-external_stylesheets = ['D:/HND/DV-assignment/assets/edit.css']  # Adjust the path according to your folder structure
+external_stylesheets = ['Dassets/edit.css']  # Adjust the path according to your folder structure
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = "Supermarket Sales Dashboard"
 
