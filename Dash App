@@ -64,12 +64,12 @@ footer = html.Div(
 # Tab 1
 tab1_layout = html.Div(
     children=[
-        html.H2("Europe Sales Records Analysis Dashboard", style={'text-align': 'center', 'margin-top': '20px', 'font-size': '40px', 'font-weight': 'bold'}),
-        html.P("This dashboard provides insights into the performance and profitability of sales across countries in the Europe region from the period of 2010 to 2017.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '23px'}),
-        html.P("The dataset used in this analysis contains records from multiple sales and includes details on order dates, quantities sold, pricing, and profitability.", style={'text-align': 'center', 'margin-top': '10px', 'font-size': '23px'}),
+        html.H2("Europe Sales Records Analysis Dashboard", className='H2'),
+        html.P("This dashboard provides insights into the performance and profitability of sales across countries in the Europe region from the period of 2010 to 2017.", className='HP'),
+        html.P("The dataset used in this analysis contains records from multiple sales and includes details on order dates, quantities sold, pricing, and profitability.",  className='HP'),
 
-        html.H3("Through this analysis, the supermarket can effectively:", style={'text-align': 'center', 'margin-top': '40px', 'font-size': '27px', 'font-weight': 'bold'}),
-        html.Ul(style={'text-align': 'left', 'margin-left': '75px', 'font-size': '23px', 'margin-top': '40px'},
+        html.H3("Through this analysis, the supermarket can effectively:", className='H3'),
+        html.Ul( className='Hl',
                 children=[
                     html.Li("Analyze which item types generate the most revenue in each country,"),
                     html.Li("Analyze the quantity of products sold for each item type across all countries to identify the countries where specific products have high sales volumes,"),
@@ -84,18 +84,16 @@ tab1_layout = html.Div(
 # Tab 2
 tab2_layout = html.Div([
     html.Div([
-        html.H3("Select Variable:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
-                                            'color': 'black', 'margin': '10px', 'padding': '4px'}),
+        html.H3("Select Variable:", className='Tab_sub_title'),
         dcc.Dropdown(
             id='Line-variable-dropdown',
             options=dropdown_options,
-            value='Total Revenue'  # Default selection
+            value='Total Revenue'
         ),
-    ], style={'width': '30%', 'display': 'inline-block', 'float': 'left', 'left': '1%'}),  # Left side
+    ], style={'width': '30%', 'display': 'inline-block', 'float': 'left', 'left': '1%'}),
 
     html.Div([
-        html.H3("Select Date Range:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
-                                                'color': 'black', 'margin': '6px', 'padding': '4px'}),
+        html.H3("Select Date Range:", className='Tab_sub_title'),
 
         dcc.RangeSlider(
                 id='date-slider',
@@ -115,22 +113,20 @@ tab2_layout = html.Div([
 
 # Tab 3
 tab3_layout = html.Div([
-    # Radio button for selecting variable
+ # Radio button
     html.Div([
-        html.H3("Select Variable:", style={'font-size': '20px', 'text-align': 'left', 'font-weight': 'bold',
-                                            'color': 'black', 'margin': '6px', 'padding': '4px'}),
+        html.H3("Select Variable:", className='Tab_sub_title'),
         dcc.RadioItems(
             id='variable-radio',
             options=scatter_dropdown_options,
-            value='Total Profit',  # Default selection
-            labelStyle={'display': 'inline-block', 'margin-right': '10px'}  # Display options horizontally
+            value='Total Profit',
+            labelStyle={'display': 'inline-block', 'margin-right': '10px'}
         ),
     ], style={'width': '45%', 'display': 'inline-block', 'float': 'left'}),
 
-    # Date slider
+# Date slider
     html.Div([
-        html.H3("Select Date Range:", style={'font-size': '20px', 'text-align': 'center', 'font-weight': 'bold',
-                                              'color': 'black', 'margin': '6px', 'padding': '4px'}),
+        html.H3("Select Date Range:", className='Tab_sub_title'),
         dcc.RangeSlider(
             id='date-slider-scatter',
             min=data['Order Date'].min().timestamp(),
@@ -142,22 +138,39 @@ tab3_layout = html.Div([
     ], style={'width': '80%', 'position': 'relative', 'margin-bottom': '30px',
               'left': '10%', 'display': 'inline-block'}),
 
-    # Scatter plot
+# Scatter plot
     dcc.Graph(id='scatter-plot'),
 ])
 
 # Tab 4
 tab4_layout = html.Div([
-    html.Div([
-        html.H3("Europe Map"),
-        dcc.Graph(
-            id='europe-map',
-            config={'displayModeBar': False},
-            style={'height': '100vh', 'width': '100%'},
-            figure=px.choropleth(data, locations="Country", locationmode="country names", hover_name="Country", title="Europe Map").update_geos(visible=False)
-        ),
-        html.Div(id='selected-country-info')
-    ], style={'width': '50%', 'height': '100vh', 'float': 'left'}),
+
+html.Div([
+html.Div([
+    html.H3("Europe Map", className='Tab_sub_title'),
+    dcc.Graph(
+        id='europe-map',
+        config={'displayModeBar': False},
+        style={'height': '60vh', 'width': '100%'},
+        figure=px.choropleth(
+            data, 
+            locations="Country", 
+            locationmode="country names", 
+            hover_name="Country", 
+            title="Europe Map",
+            color="Total Revenue",
+            color_continuous_scale=px.colors.diverging.Picnic,
+            range_color=(0, 6000000)
+        ).update_geos(visible=False)
+    ),
+    
+    html.Div(id='selected-country-information', className='Tab_sub_title')
+], style={'width': '100%', 'height': '150vh', 'float': 'left', 'overflow': 'hidden'}),
+
+    
+    html.Div(id='selected-country-information', className='Tab_sub_title')
+], style={'width': '50%', 'height': '150vh', 'float': 'left'}),
+
     html.Div([
         dcc.Graph(id='country-item-bar', figure=default_bar_graph, style={'width': '90%', 'height': '70vh'})
     ], style={'width': '50%', 'height': '100vh', 'overflow-y': 'auto', 'overflow-x': 'hidden'})
@@ -167,17 +180,22 @@ tab4_layout = html.Div([
 # Tab 5
 tab5_layout = html.Div([
     html.Div([
-        html.H3("Pie Chart"),
         dcc.Graph(
             id='pie-chart',
             figure=px.pie(data, names='Item Type', values='Units Sold', title='Pie Chart').update_traces(textinfo='percent+label'),
-            style={'width': '50%', 'height': '120vh', 'float': 'left'}
-        ),
-        dcc.Graph(id='item-order-priority-bar', style={'width': '50%', 'height': '50vh', 'float': 'right'})
-    ]),
+            style={'width': '50%', 'height': '80vh', 'float': 'left'}
+        )   
+]),
     html.Div([
-        html.H3("Line Chart"),
-        dcc.Graph(id='line-chart', style={'width': '50%', 'height': '65vh', 'float': 'right'})
+    html.H3("Bar Chart", className='Tab_sub_title'),
+    dcc.Graph(
+        id='item-order-priority-bar',
+        style={'width': '50%', 'height': '40vh', 'float': 'right'}
+    )
+]),
+    html.Div([
+        html.H3("Line Chart", className='Tab_sub_title'),
+        dcc.Graph(id='line-chart', style={'width': '40%', 'height': '50vh', 'float': 'right'})
     ])
 ])
 
@@ -198,6 +216,7 @@ app.layout = html.Div(children=[
     title, footer, tabs
 ])
 
+
 # Callback for updating line graph in Tab 2
 @app.callback(
     Output(component_id='graphoutput', component_property='figure'),
@@ -209,7 +228,7 @@ def update_graph(selected_variable, date_range):
     end_date = pd.to_datetime(date_range[1], unit='s')
     filtered_data = data[(data['Order Date'] >= start_date) & (data['Order Date'] <= end_date)]
 
-    # Group by selected variable
+#Group by selected variable
     grouped_data = filtered_data.groupby(filtered_data['Order Date'].dt.year)[selected_variable].sum().reset_index()
 
     fig = px.line(grouped_data, x='Order Date', y=selected_variable, title=f'{selected_variable.capitalize()} by year', color_discrete_sequence=['#26538d'])
@@ -217,10 +236,11 @@ def update_graph(selected_variable, date_range):
     fig.update_traces(line=dict(width=4))
 
     fig.update_xaxes(title_text="Year")
-    # update graph title
+#update graph title
     fig.update_yaxes(title_text=selected_variable.capitalize(),
                      range=[grouped_data[selected_variable].min(), grouped_data[selected_variable].max()])
     return fig
+
 
 # Callback for updating scatter plot in Tab 3
 @app.callback(
@@ -229,20 +249,20 @@ def update_graph(selected_variable, date_range):
      Input(component_id='date-slider-scatter', component_property='value')]
 )
 def update_scatter_plot(selected_variable, date_range):
-    # Filter data based on date range
+#Filter data based on date range
     start_date = pd.to_datetime(date_range[0], unit='s')
     end_date = pd.to_datetime(date_range[1], unit='s')
     filtered_data = data[(data['Order Date'] >= start_date) & (data['Order Date'] <= end_date)]
 
-    # Create scatter plot
+#scatter plot
     fig = px.scatter(filtered_data, x='Total Revenue', y=selected_variable,
                      title=f'Scatter Plot: Total Revenue vs {selected_variable}',
-                     hover_name='Item Type')  # Include Item Type in hover
+                     hover_name='Item Type')
 
-    # Calculate correlation
+#correlation
     correlation = filtered_data['Total Revenue'].corr(filtered_data[selected_variable])
 
-    # Update layout
+ #Update layout
     fig.update_layout(title=f'Scatter Plot: Total Revenue vs {selected_variable} (Correlation: {correlation:.2f})')
     fig.update_xaxes(title_text="Total Revenue")
     fig.update_yaxes(title_text=selected_variable.capitalize())
@@ -251,31 +271,25 @@ def update_scatter_plot(selected_variable, date_range):
 
 
 
-# Callback to update the bar graph based on the clicked country
+# Callback for updating scatter plot in Tab 4
 @app.callback(
     Output('country-item-bar', 'figure'),
     [Input('europe-map', 'clickData')]
 )
 def update_bar_graph(clickData):
     if clickData is None:
-        # If no country is clicked, return the default bar graph
         return default_bar_graph
     else:
-        # Extract the clicked country from the click data
         selected_country = clickData['points'][0]['location']
-
-        # Filter the data for the selected country
         country_data = data[data['Country'] == selected_country]
-
-        # Group the data by item type and calculate the total units sold
         item_counts = country_data.groupby('Item Type')['Units Sold'].sum().reset_index()
 
-        # Create the bar graph
+#bar graph
         fig = px.bar(item_counts, x='Item Type', y='Units Sold', title=f'Product Items Ordered in {selected_country}')
 
         return fig
     
-# Callback to update the line chart and item order priority bar based on the selection in the pie chart
+# Callback for updating scatter plot in Tab 5
 @app.callback(
     [Output('line-chart', 'figure'),
      Output('item-order-priority-bar', 'figure')],
@@ -283,17 +297,17 @@ def update_bar_graph(clickData):
 )
 def update_charts(clickData):
     if clickData is None:
-        # If no data is clicked on the pie chart, show the default line chart and bar graph for all item types
+
         default_data = data.groupby('Order Date').agg({'Total Revenue': 'sum', 'Total Profit': 'sum'}).reset_index()
         default_line_fig = px.line(default_data, x='Order Date', y=['Total Revenue', 'Total Profit'], title='Total Revenue and Profit Over Time')
-        default_line_fig.update_xaxes(tickformat='%Y')  # Show only the year on the x-axis
+        default_line_fig.update_xaxes(tickformat='%Y')
         default_line_fig.update_layout(xaxis_title='Order Date', yaxis_title='Amount')
         
-        # Calculate the default order priority distribution for all item types
+   
         default_order_priority_counts = data['Order Priority'].value_counts().reset_index()
         default_order_priority_counts.columns = ['Order Priority', 'Count']
         
-        # Create the default bar graph for item order priority
+
         default_bar_fig = px.bar(default_order_priority_counts, x='Order Priority', y='Count', 
                                  title='Order Priority Distribution for All Item Types')
         default_bar_fig.update_xaxes(title_text="Order Priority")
@@ -302,26 +316,20 @@ def update_charts(clickData):
         return default_line_fig, default_bar_fig
 
     else:
-        # Extract the selected item type from the click data
+
         selected_item_type = clickData['points'][0]['label']
-        
-        # Filter the data for the selected item type
         filtered_data = data[data['Item Type'] == selected_item_type]
-        
-        # Group the filtered data by order date and calculate the total revenue and profit
         grouped_data = filtered_data.groupby(filtered_data['Order Date'].dt.year)[['Total Revenue', 'Total Profit']].sum().reset_index()
         
-        # Create the line chart
+#line chart
         line_fig = px.line(grouped_data, x='Order Date', y=['Total Revenue', 'Total Profit'], 
                            title=f'Total Revenue and Profit Over Time for {selected_item_type}')
         line_fig.update_xaxes(title_text="Year")
         line_fig.update_yaxes(title_text="Amount")
         
-        # Group the filtered data by order priority and calculate the count
         order_priority_counts = filtered_data['Order Priority'].value_counts().reset_index()
         order_priority_counts.columns = ['Order Priority', 'Count']
         
-        # Create the bar graph for item order priority
         bar_fig = px.bar(order_priority_counts, x='Order Priority', y='Count', 
                          title=f'Order Priority Distribution for {selected_item_type}')
         bar_fig.update_xaxes(title_text="Order Priority")
