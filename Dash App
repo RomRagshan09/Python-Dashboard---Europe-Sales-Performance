@@ -215,8 +215,8 @@ tabs = dcc.Tabs(id='tabs', value='tab-1', children=[
 
 # Layout of the app
 app.layout = html.Div(children=[
-    title, footer, tabs
-])
+    title, footer, tabs], style={
+        'background': 'linear-gradient(135deg, #3498db, #8e44ad)'})
 
 
 # Callback for updating line graph in Tab 2
