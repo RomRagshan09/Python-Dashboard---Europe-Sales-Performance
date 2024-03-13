@@ -88,7 +88,7 @@ tab2_layout = html.Div([
         dcc.Dropdown(
             id='Line-variable-dropdown',
             options=dropdown_options,
-            value='Total Revenue'
+            value='Total Revenue',
         ),
     ], style={'width': '30%', 'display': 'inline-block', 'float': 'left', 'left': '1%'}),
 
@@ -144,56 +144,61 @@ tab3_layout = html.Div([
 
 # Tab 4
 tab4_layout = html.Div([
+        html.Div([
+            html.H3("Europe Map", className='Tab_sub_title'),
+dcc.Graph(
+    id='europe-map',
+    style={'position': 'absolute', 'top': '4', 'left': '0', 'width': '50%', 'height': '80vh'},
+    figure=px.choropleth(
+        data,
+        locations="Country",
+        locationmode="country names",
+        hover_name="Country",
+        title="Europe Map",
+        color="Total Revenue",
+        color_continuous_scale=px.colors.diverging.Picnic,
+        range_color=(0, 6000000)
+    ).update_geos(
+        visible=False,
+        resolution=50,
+        showcoastlines=True,
+        showland=True,
+        showframe=False,
+        projection_type='equirectangular',
+        lonaxis_range=[-25, 40],  # Adjust longitude range for desired zoom
+        lataxis_range=[35, 70]    # Adjust latitude range for desired zoom
+    )
+),
 
-html.Div([
-html.Div([
-    html.H3("Europe Map", className='Tab_sub_title'),
-    dcc.Graph(
-        id='europe-map',
-        config={'displayModeBar': False},
-        style={'height': '60vh', 'width': '100%'},
-        figure=px.choropleth(
-            data, 
-            locations="Country", 
-            locationmode="country names", 
-            hover_name="Country", 
-            title="Europe Map",
-            color="Total Revenue",
-            color_continuous_scale=px.colors.diverging.Picnic,
-            range_color=(0, 6000000)
-        ).update_geos(visible=False)
-    ),
-    
-    html.Div(id='selected-country-information', className='Tab_sub_title')
-], style={'width': '100%', 'height': '150vh', 'float': 'left', 'overflow': 'hidden'}),
-], style={'width': '50%', 'height': '150vh', 'float': 'left'}),
-
-    html.Div([
-        dcc.Graph(id='country-item-bar', figure=default_bar_graph, style={'width': '90%', 'height': '70vh'})
-    ], style={'width': '50%', 'height': '100vh', 'overflow-y': 'auto', 'overflow-x': 'hidden'})
+            dcc.Graph(
+                id='country-item-bar',
+                figure=default_bar_graph,
+                 style={'position': 'absolute', 'top': '4', 'right': '0', 'width': '50%', 'height': '80vh'}
+            ),
+    ])
 ])
 
 
 # Tab 5
 tab5_layout = html.Div([
-    html.Div([
-        dcc.Graph(
-            id='pie-chart',
-            figure=px.pie(data, names='Item Type', values='Units Sold', title='Pie Chart').update_traces(textinfo='percent+label'),
-            style={'width': '50%', 'height': '80vh', 'float': 'left'}
-        )   
-]),
-    html.Div([
-    html.H3("Bar Chart", className='Tab_sub_title'),
+html.Div
+([
     dcc.Graph(
-        id='item-order-priority-bar',
-        style={'width': '50%', 'height': '40vh', 'float': 'right'}
-    )
-]),
-    html.Div([
-        html.H3("Line Chart", className='Tab_sub_title'),
-        dcc.Graph(id='line-chart', style={'width': '40%', 'height': '50vh', 'float': 'right'})
-    ])
+        id='pie-chart',
+        figure=px.pie(data, names='Item Type', values='Units Sold', title='Pie Chart').update_traces(textinfo='percent+label'),
+        style={'width': '50%', 'height': '85vh', 'float': 'left'}
+    ),
+html.H3("Bar Chart", className='Tab_sub_title'),
+dcc.Graph(
+    id='item-order-priority-bar',
+    style={'position': 'absolute', 'top': '4', 'right': '0', 'width': '50%', 'height': '45vh'}
+),
+html.H3("Line Chart", className='Tab_sub_title'),
+dcc.Graph(
+    id='line-chart',
+    style={'position': 'absolute', 'bottom': '0', 'right': '0', 'width': '50%', 'height': '45vh'}
+)
+], style={'display': 'flex'})
 ])
 
 
@@ -328,7 +333,7 @@ def update_charts(clickData):
         order_priority_counts.columns = ['Order Priority', 'Count']
         
         bar_fig = px.bar(order_priority_counts, x='Order Priority', y='Count', 
-                         title=f'Order Priority Distribution for {selected_item_type}')
+                         title=f'Order Priority Distribution for {selected_item_type}',)
         bar_fig.update_xaxes(title_text="Order Priority")
         bar_fig.update_yaxes(title_text="Count")
         
