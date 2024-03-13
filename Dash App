@@ -16,7 +16,7 @@ dropdown_options = [{'label': 'Total Revenue', 'value': 'Total Revenue'},
 # scatter drop down option
 scatter_dropdown_options = [
     {'label': 'Total Profit', 'value': 'Total Profit'},
-    {'label': 'Units Sold', 'value': 'Units Sold'},
+    {'label': 'Total Revenue', 'value': 'Total Revenue'},
     {'label': 'Total Cost', 'value': 'Total Cost'}
 ]
 # Define product categories
@@ -257,16 +257,15 @@ def update_scatter_plot(selected_variable, date_range):
     filtered_data = data[(data['Order Date'] >= start_date) & (data['Order Date'] <= end_date)]
 
 #scatter plot
-    fig = px.scatter(filtered_data, x='Total Revenue', y=selected_variable,
-                     title=f'Scatter Plot: Total Revenue vs {selected_variable}',
-                     hover_name='Item Type')
+    fig = px.scatter(filtered_data, x='Units Sold', y=selected_variable,
+                     title=f'Scatter Plot: Units Sold vs {selected_variable}')
 
 #correlation
-    correlation = filtered_data['Total Revenue'].corr(filtered_data[selected_variable])
+    correlation = filtered_data['Units Sold'].corr(filtered_data[selected_variable])
 
  #Update layout
-    fig.update_layout(title=f'Scatter Plot: Total Revenue vs {selected_variable} (Correlation: {correlation:.2f})')
-    fig.update_xaxes(title_text="Total Revenue")
+    fig.update_layout(title=f'Scatter Plot: Units Sold vs {selected_variable} (Correlation: {correlation:.2f})')
+    fig.update_xaxes(title_text="Unit Sold")
     fig.update_yaxes(title_text=selected_variable.capitalize())
 
     return fig
