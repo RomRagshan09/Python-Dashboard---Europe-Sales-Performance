@@ -174,7 +174,7 @@ html.Div
 ([
     dcc.Graph(
         id='pie-chart',
-        figure=px.pie(data, names='Item Type', values='Units Sold', title='Pie Chart').update_traces(textinfo='percent+label'),
+        figure=px.pie(data, names='Item Type', values='Units Sold', title='Pie Chart').update_traces(textinfo='percent+label', showlegend=False),
         style={'width': '50%', 'height': '85vh', 'float': 'left'}
     ),
 html.H3("Bar Chart", className='Tab_sub_title'),
@@ -283,7 +283,7 @@ def update_bar_graph(clickData):
 
         return fig
     
-# Callback for updating scatter plot in Tab 5
+## Callback for updating scatter plot in Tab 5
 @app.callback(
     [Output('line-chart', 'figure'),
      Output('item-order-priority-bar', 'figure')],
@@ -296,21 +296,25 @@ def update_charts(clickData):
         default_line_fig = px.line(default_data, x='Order Date', y=['Total Revenue', 'Total Profit'], title="Total Revenue and Profit Over the Period:",
                                    color_discrete_map={'Total Revenue': 'blue', 'Total Profit': 'red'})
         
-        
+
         default_line_fig.update_layout(legend=dict(x=0.98, y=1.5, xanchor='right', yanchor='top', font=dict(size=10)))
 
         default_line_fig.update_xaxes(tickformat='%Y')
         default_line_fig.update_layout(xaxis_title='Order Date', yaxis_title='Amount')
         
-   
+        
         default_order_priority_counts = data['Order Priority'].value_counts().reset_index()
         default_order_priority_counts.columns = ['Order Priority', 'Count']
         
 
-        default_bar_fig = px.bar(default_order_priority_counts, x='Order Priority', y='Count', 
-                                 title="Order Priority Distribution for Item Types:")
-        default_bar_fig.update_xaxes(title_text="Order Priority")
-        default_bar_fig.update_yaxes(title_text="Count")
+        default_bar_fig = px.bar(default_order_priority_counts, x='Count', y='Order Priority', 
+                                 title="Order Priority Distribution for Item Types:", orientation='h')
+        
+        default_bar_fig.update_yaxes(title_text="Order Priority")
+        default_bar_fig.update_xaxes(title_text="Count")
+
+        # Manually set x-axis tick labels
+        default_bar_fig.update_yaxes(categoryorder='total ascending', tickvals=[0, 1, 2, 3], ticktext=["C: Critical & High", "H: High", "L: Low", "M: Medium"])
         
         return default_line_fig, default_bar_fig
 
@@ -333,10 +337,14 @@ def update_charts(clickData):
         order_priority_counts = filtered_data['Order Priority'].value_counts().reset_index()
         order_priority_counts.columns = ['Order Priority', 'Count']
         
-        bar_fig = px.bar(order_priority_counts, x='Order Priority', y='Count', 
-                         title=f'Order Priority Distribution for {selected_item_type}',)
-        bar_fig.update_xaxes(title_text="Order Priority")
-        bar_fig.update_yaxes(title_text="Count")
+        bar_fig = px.bar(order_priority_counts, x='Count', y='Order Priority', 
+                         title=f'Order Priority Distribution for {selected_item_type}', orientation='h')
+        
+        bar_fig.update_yaxes(title_text="Order Priority")
+        bar_fig.update_xaxes(title_text="Count")
+        
+        # Manually set x-axis tick labels
+        bar_fig.update_yaxes(categoryorder='total ascending', tickvals=[0, 1, 2, 3], ticktext=["C: Critical & High", "H: High", "L: Low", "M: Medium"])
         
         return line_fig, bar_fig
 
