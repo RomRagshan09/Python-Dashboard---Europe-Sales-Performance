@@ -57,8 +57,10 @@ footer = html.Div(
             className='footer-content'
         )
     ],
-    className='footer-container'
+    className='footer-container',
 )
+
+
 # Define tab content
 
 # Tab 1
@@ -89,6 +91,7 @@ tab2_layout = html.Div([
             id='Line-variable-dropdown',
             options=dropdown_options,
             value='Total Revenue',
+            multi=True
         ),
     ], style={'width': '30%', 'display': 'inline-block', 'float': 'left', 'left': '1%'}),
 
@@ -96,17 +99,18 @@ tab2_layout = html.Div([
         html.H3("Select Date Range:", className='Tab_sub_title'),
 
         dcc.RangeSlider(
-                id='date-slider',
-                min=data['Order Date'].min().timestamp(),
-                max=data['Order Date'].max().timestamp(),
-                marks={int(date.timestamp()): date.strftime('%m/%Y') for date in
-                       pd.date_range(start=data['Order Date'].min(), end=data['Order Date'].max(), freq='6M')},
-                value=[data['Order Date'].min().timestamp(), data['Order Date'].max().timestamp()]
-            ),
+    id='date-slider',
+    min=data['Order Date'].min().timestamp(),
+    max=data['Order Date'].max().timestamp(),
+    marks={int(date.timestamp()): {'label': date.strftime('%m/%Y'), 'style': {'color': 'black', 'font-weight': 'bold'}} for date in
+           pd.date_range(start=data['Order Date'].min(), end=data['Order Date'].max(), freq='6M')},
+    value=[data['Order Date'].min().timestamp(), data['Order Date'].max().timestamp()]
+)
+,
         ], style={'width': '80%', 'position': 'relative', 'margin-bottom': '30px',
                   'left': '10%', 'display': 'inline-block'}),
 
-        dcc.Graph(id='graphoutput', style={'width': '96%', 'height': '60vh', 'margin': 'auto', 'position': 'relative', 'bottom': '40px'}),
+        dcc.Graph(id='graphoutput', style={'width': '96%', 'height': '60vh', 'margin': 'auto', 'position': 'relative', 'bottom': '30px', 'background': 'linear-gradient(135deg, #3498db, #8e44ad)'}),
     ])
 
 
@@ -128,18 +132,18 @@ tab3_layout = html.Div([
     html.Div([
         html.H3("Select Date Range:", className='Tab_sub_title'),
         dcc.RangeSlider(
-            id='date-slider-scatter',
-            min=data['Order Date'].min().timestamp(),
-            max=data['Order Date'].max().timestamp(),
-            marks={int(date.timestamp()): date.strftime('%m\%Y') for date in
-                   pd.date_range(start=data['Order Date'].min(), end=data['Order Date'].max(), freq='6M')},
-            value=[data['Order Date'].min().timestamp(), data['Order Date'].max().timestamp()]
-        ),
-    ], style={'width': '80%', 'position': 'relative', 'margin-bottom': '30px',
+    id='date-slider-scatter',
+    min=data['Order Date'].min().timestamp(),
+    max=data['Order Date'].max().timestamp(),
+    marks={int(date.timestamp()): {'label': date.strftime('%m\%Y'), 'style': {'color': 'black', 'font-weight': 'bold'}} for date in
+           pd.date_range(start=data['Order Date'].min(), end=data['Order Date'].max(), freq='6M')},
+    value=[data['Order Date'].min().timestamp(), data['Order Date'].max().timestamp()]
+),
+    ], style={'width': '80%', 'position': 'relative', 'bottom': '30px',
               'left': '10%', 'display': 'inline-block'}),
 
 # Scatter plot
-    dcc.Graph(id='scatter-plot'),
+    dcc.Graph(id='scatter-plot', style={'width': '96%', 'height': '60vh', 'margin': 'auto', 'position': 'relative', 'bottom': '30px', 'background': 'linear-gradient(135deg, #3498db, #8e44ad)'}),
 ])
 
 # Tab 4
@@ -149,31 +153,16 @@ tab4_layout = html.Div([
 dcc.Graph(
     id='europe-map',
     style={'position': 'absolute', 'top': '4', 'left': '0', 'width': '50%', 'height': '80vh'},
-    figure=px.choropleth(
-        data,
-        locations="Country",
-        locationmode="country names",
-        hover_name="Country",
-        title="Europe Map",
-        color="Total Revenue",
-        color_continuous_scale=px.colors.diverging.Picnic,
-        range_color=(0, 6000000)
-    ).update_geos(
-        visible=False,
-        resolution=50,
-        showcoastlines=True,
-        showland=True,
-        showframe=False,
-        projection_type='equirectangular',
-        lonaxis_range=[-25, 40],  # Adjust longitude range for desired zoom
-        lataxis_range=[35, 70]    # Adjust latitude range for desired zoom
-    )
+    figure=px.choropleth(data,locations="Country",locationmode="country names",hover_name="Country",title="Europe Map",color="Total Revenue",color_continuous_scale=px.colors.diverging.Picnic,range_color=(0, 6000000)).update_geos
+    (visible=False,resolution=50,showcoastlines=True,showland=True,showframe=False,projection_type='equirectangular',
+    lonaxis_range=[-25, 40],  # Adjust longitude range for desired zoom
+    lataxis_range=[35, 70])    # Adjust latitude range for desired zoom
 ),
 
             dcc.Graph(
                 id='country-item-bar',
                 figure=default_bar_graph,
-                 style={'position': 'absolute', 'top': '4', 'right': '0', 'width': '50%', 'height': '80vh'}
+                 style={'position': 'absolute', 'top': '2', 'right': '0', 'width': '50%', 'height': '72vh'}
             ),
     ])
 ])
@@ -191,15 +180,15 @@ html.Div
 html.H3("Bar Chart", className='Tab_sub_title'),
 dcc.Graph(
     id='item-order-priority-bar',
-    style={'position': 'absolute', 'top': '4', 'right': '0', 'width': '50%', 'height': '45vh'}
+    style={'position': 'absolute', 'top': '1', 'right': '0', 'width': '50%', 'height': '45vh'}
 ),
 html.H3("Line Chart", className='Tab_sub_title'),
 dcc.Graph(
     id='line-chart',
-    style={'position': 'absolute', 'bottom': '0', 'right': '0', 'width': '50%', 'height': '45vh'}
+    style={'position': 'absolute', 'top': '58%', 'right': '0', 'width': '50%', 'height': '45vh'}
 )
 ], style={'display': 'flex'})
-])
+],)
 
 
 
@@ -215,8 +204,7 @@ tabs = dcc.Tabs(id='tabs', value='tab-1', children=[
 
 # Layout of the app
 app.layout = html.Div(children=[
-    title, footer, tabs], style={
-        'background': 'linear-gradient(135deg, #3498db, #8e44ad)'})
+    title, footer, tabs], style={'background': 'linear-gradient(135deg, #3498db, #8e44ad)'})
 
 
 # Callback for updating line graph in Tab 2
@@ -225,24 +213,29 @@ app.layout = html.Div(children=[
     [Input(component_id='Line-variable-dropdown', component_property='value'),
      Input(component_id='date-slider', component_property='value')]
 )
-def update_graph(selected_variable, date_range):
+def update_graph(selected_variables, date_range):
     start_date = pd.to_datetime(date_range[0], unit='s')
     end_date = pd.to_datetime(date_range[1], unit='s')
     filtered_data = data[(data['Order Date'] >= start_date) & (data['Order Date'] <= end_date)]
 
-#Group by selected variable
-    grouped_data = filtered_data.groupby(filtered_data['Order Date'].dt.year)[selected_variable].sum().reset_index()
+    fig = px.line(title="Sales Over Time")
 
-    fig = px.line(grouped_data, x='Order Date', y=selected_variable, title=f'{selected_variable.capitalize()} by year', color_discrete_sequence=['#26538d'])
+    if isinstance(selected_variables, str):  # If only one variable is selected
+        selected_variables = [selected_variables]
+
+    for variable in selected_variables:
+        grouped_data = filtered_data.groupby(filtered_data['Order Date'].dt.year)[variable].sum().reset_index()
+        fig.add_scatter(x=grouped_data['Order Date'], y=grouped_data[variable], mode='lines', name=variable.capitalize())
+
     fig.update_layout(plot_bgcolor='#d7fffd')
-    fig.update_traces(line=dict(width=4))
-
+    fig.update_traces(line=dict(width=3))
     fig.update_xaxes(title_text="Year")
-#update graph title
-    fig.update_yaxes(title_text=selected_variable.capitalize(),
-                     range=[grouped_data[selected_variable].min(), grouped_data[selected_variable].max()])
-    return fig
 
+    # Assuming you want to handle the y-axis label for each selected variable
+    for variable in selected_variables:
+        fig.update_yaxes(title_text=variable.capitalize())
+
+    return fig
 
 # Callback for updating scatter plot in Tab 3
 @app.callback(
@@ -300,7 +293,12 @@ def update_charts(clickData):
     if clickData is None:
 
         default_data = data.groupby('Order Date').agg({'Total Revenue': 'sum', 'Total Profit': 'sum'}).reset_index()
-        default_line_fig = px.line(default_data, x='Order Date', y=['Total Revenue', 'Total Profit'], title='Total Revenue and Profit Over Time')
+        default_line_fig = px.line(default_data, x='Order Date', y=['Total Revenue', 'Total Profit'], title="Total Revenue and Profit Over the Period:",
+                                   color_discrete_map={'Total Revenue': 'blue', 'Total Profit': 'red'})
+        
+        
+        default_line_fig.update_layout(legend=dict(x=0.98, y=1.5, xanchor='right', yanchor='top', font=dict(size=10)))
+
         default_line_fig.update_xaxes(tickformat='%Y')
         default_line_fig.update_layout(xaxis_title='Order Date', yaxis_title='Amount')
         
@@ -310,7 +308,7 @@ def update_charts(clickData):
         
 
         default_bar_fig = px.bar(default_order_priority_counts, x='Order Priority', y='Count', 
-                                 title='Order Priority Distribution for All Item Types')
+                                 title="Order Priority Distribution for Item Types:")
         default_bar_fig.update_xaxes(title_text="Order Priority")
         default_bar_fig.update_yaxes(title_text="Count")
         
@@ -324,7 +322,11 @@ def update_charts(clickData):
         
 #line chart
         line_fig = px.line(grouped_data, x='Order Date', y=['Total Revenue', 'Total Profit'], 
-                           title=f'Total Revenue and Profit Over Time for {selected_item_type}')
+                           title=f'Total Revenue and Profit Over Time for {selected_item_type}',
+                           color_discrete_map={'Total Revenue': 'blue', 'Total Profit': 'red'})
+        
+        line_fig.update_layout(legend=dict(x=0.98, y=1.5, xanchor='right', yanchor='top', font=dict(size=10)))
+
         line_fig.update_xaxes(title_text="Year")
         line_fig.update_yaxes(title_text="Amount")
         
