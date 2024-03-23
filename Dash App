@@ -13,24 +13,18 @@ dropdown_options = [{'label': 'Total Revenue', 'value': 'Total Revenue'},
                     {'label': 'Total Cost', 'value': 'Total Cost'},
                     {'label': 'Total Profit', 'value': 'Total Profit'}]
 
-# scatter drop down option
-scatter_dropdown_options = [
-    {'label': 'Total Profit', 'value': 'Total Profit'},
-    {'label': 'Total Revenue', 'value': 'Total Revenue'},
-    {'label': 'Total Cost', 'value': 'Total Cost'}
-]
+
 # Define product categories
 Item_Type = [
     'Beverages', 'Clothes', 'Cereal', 'Office Supplies', 'Vegetables', 'Meat',
-    'Snacks', 'Baby Food', 'Household', 'Cosmetics', 'Personal Care', 'Fruits'
-]
-
+    'Snacks', 'Baby Food', 'Household', 'Cosmetics', 'Personal Care', 'Fruits']
+    
 # Define dropdown options for product categories
 category_dropdown_options = [{'label': category, 'value': category} for category in Item_Type]
 
 # Initialize app
-external_stylesheets = ['Dassets/edit.css']  # Adjust the path according to your folder structure
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+
+app = dash.Dash(__name__,assets_folder="assets")
 app.title = "Supermarket Sales Dashboard"
 
 # Define default bar graph
@@ -85,31 +79,24 @@ tab1_layout = html.Div(
 
 # Tab 2
 tab2_layout = html.Div([
-    html.Div([
         html.H3("Select Variable:", className='Tab_sub_title'),
         dcc.Dropdown(
             id='Line-variable-dropdown',
             options=dropdown_options,
             value='Total Revenue',
-            multi=True
+            multi=True,            
+            style={'width': '50%', 'display': 'inline-block', 'float': 'left', 'left': '1%'}
         ),
-    ], style={'width': '30%', 'display': 'inline-block', 'float': 'left', 'left': '1%'}),
 
-    html.Div([
         html.H3("Select Date Range:", className='Tab_sub_title'),
-
         dcc.RangeSlider(
-    id='date-slider',
-    min=data['Order Date'].min().timestamp(),
-    max=data['Order Date'].max().timestamp(),
-    marks={int(date.timestamp()): {'label': date.strftime('%m/%Y'), 'style': {'color': 'black', 'font-weight': 'bold'}} for date in
-           pd.date_range(start=data['Order Date'].min(), end=data['Order Date'].max(), freq='6M')},
-    value=[data['Order Date'].min().timestamp(), data['Order Date'].max().timestamp()]
-)
-,
-        ], style={'width': '80%', 'position': 'relative', 'margin-bottom': '30px',
-                  'left': '10%', 'display': 'inline-block'}),
-
+             id='date-slider',
+             min=data['Order Date'].min().timestamp(),
+             max=data['Order Date'].max().timestamp(),
+             marks={int(date.timestamp()): {'label': date.strftime('%m/%Y'), 'style': {'color': 'black', 'font-weight': 'bold'}} for date in pd.date_range(start=data['Order Date'].min(), end=data['Order Date'].max(), freq='6M')},
+             value=[data['Order Date'].min().timestamp(), data['Order Date'].max().timestamp()],
+             className='custom-style'
+),
         dcc.Graph(id='graphoutput', style={'width': '96%', 'height': '60vh', 'margin': 'auto', 'position': 'relative', 'bottom': '30px', 'background': 'linear-gradient(135deg, #3498db, #8e44ad)'}),
     ])
 
@@ -117,31 +104,25 @@ tab2_layout = html.Div([
 
 # Tab 3
 tab3_layout = html.Div([
- # Radio button
-    html.Div([
+ # Radio button[
         html.H3("Select Variable:", className='Tab_sub_title'),
         dcc.RadioItems(
             id='variable-radio',
-            options=scatter_dropdown_options,
-            value='Total Profit',
-            labelStyle={'display': 'inline-block', 'margin-right': '10px'}
+            options=dropdown_options,
+            value='Total Revenue',
+            labelStyle={'display': 'inline-block', 'margin-right': '10px'},
+            style={'width': '45%', 'display': 'inline-block', 'float': 'left'}
         ),
-    ], style={'width': '45%', 'display': 'inline-block', 'float': 'left'}),
-
 # Date slider
-    html.Div([
         html.H3("Select Date Range:", className='Tab_sub_title'),
-        dcc.RangeSlider(
+dcc.RangeSlider(
     id='date-slider-scatter',
     min=data['Order Date'].min().timestamp(),
     max=data['Order Date'].max().timestamp(),
-    marks={int(date.timestamp()): {'label': date.strftime('%m\%Y'), 'style': {'color': 'black', 'font-weight': 'bold'}} for date in
-           pd.date_range(start=data['Order Date'].min(), end=data['Order Date'].max(), freq='6M')},
-    value=[data['Order Date'].min().timestamp(), data['Order Date'].max().timestamp()]
+    marks={int(date.timestamp()): {'label': date.strftime('%m\%Y'), 'style': {'color': 'black', 'font-weight': 'bold'}} for date in pd.date_range(start=data['Order Date'].min(), end=data['Order Date'].max(), freq='6M')},
+    value=[data['Order Date'].min().timestamp(), data['Order Date'].max().timestamp()],
+    className='custom-style'
 ),
-    ], style={'width': '80%', 'position': 'relative', 'bottom': '30px',
-              'left': '10%', 'display': 'inline-block'}),
-
 # Scatter plot
     dcc.Graph(id='scatter-plot', style={'width': '96%', 'height': '60vh', 'margin': 'auto', 'position': 'relative', 'bottom': '30px', 'background': 'linear-gradient(135deg, #3498db, #8e44ad)'}),
 ])
@@ -162,7 +143,7 @@ dcc.Graph(
             dcc.Graph(
                 id='country-item-bar',
                 figure=default_bar_graph,
-                 style={'position': 'absolute', 'top': '2', 'right': '0', 'width': '50%', 'height': '72vh'}
+                style={'position': 'absolute', 'top': '2', 'right': '0', 'width': '50%', 'height': '72vh'}
             ),
     ])
 ])
@@ -209,9 +190,9 @@ app.layout = html.Div(children=[
 
 # Callback for updating line graph in Tab 2
 @app.callback(
-    Output(component_id='graphoutput', component_property='figure'),
-    [Input(component_id='Line-variable-dropdown', component_property='value'),
-     Input(component_id='date-slider', component_property='value')]
+    Output('graphoutput','figure'),
+    [Input('Line-variable-dropdown','value'),
+     Input('date-slider','value')]
 )
 def update_graph(selected_variables, date_range):
     start_date = pd.to_datetime(date_range[0], unit='s')
@@ -239,9 +220,9 @@ def update_graph(selected_variables, date_range):
 
 # Callback for updating scatter plot in Tab 3
 @app.callback(
-    Output(component_id='scatter-plot', component_property='figure'),
-    [Input(component_id='variable-radio', component_property='value'),
-     Input(component_id='date-slider-scatter', component_property='value')]
+    Output('scatter-plot','figure'),
+    [Input('variable-radio','value'),
+     Input('date-slider-scatter','value')]
 )
 def update_scatter_plot(selected_variable, date_range):
 #Filter data based on date range
@@ -259,6 +240,7 @@ def update_scatter_plot(selected_variable, date_range):
  #Update layout
     fig.update_layout(title=f'Scatter Plot: Units Sold vs {selected_variable} (Correlation: {correlation:.2f})')
     fig.update_xaxes(title_text="Unit Sold")
+    fig.update_layout(plot_bgcolor='#d7fffd')
     fig.update_yaxes(title_text=selected_variable.capitalize())
 
     return fig
@@ -280,7 +262,7 @@ def update_bar_graph(clickData):
 
 #bar graph
         fig = px.bar(item_counts, x='Item Type', y='Units Sold', title=f'Product Items Ordered in {selected_country}')
-
+        fig.update_layout(plot_bgcolor='#d7fffd')
         return fig
     
 ## Callback for updating scatter plot in Tab 5
