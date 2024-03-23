@@ -27,9 +27,7 @@ category_dropdown_options = [{'label': category, 'value': category} for category
 app = dash.Dash(__name__,assets_folder="assets")
 app.title = "Supermarket Sales Dashboard"
 
-# Define default bar graph
-default_item_counts = data.groupby('Item Type')['Units Sold'].sum().reset_index()
-default_bar_graph = px.bar(default_item_counts, x='Item Type', y='Units Sold', title="Product Items Ordered", labels={'x': 'Item Type', 'y': 'Units Sold'})
+
 
 title = html.Div(
     children=[
@@ -127,6 +125,10 @@ dcc.RangeSlider(
     dcc.Graph(id='scatter-plot', style={'width': '96%', 'height': '60vh', 'margin': 'auto', 'position': 'relative', 'bottom': '30px', 'background': 'linear-gradient(135deg, #3498db, #8e44ad)'}),
 ])
 
+# Define default bar graph
+default_item_counts = data.groupby('Item Type')['Units Sold'].sum().reset_index()
+default_bar_graph = px.bar(default_item_counts, x='Item Type', y='Units Sold', title="Product Items Ordered", labels={'x': 'Item Type', 'y': 'Units Sold'})
+
 # Tab 4
 tab4_layout = html.Div([
         html.Div([
@@ -161,12 +163,12 @@ html.Div
 html.H3("Bar Chart", className='Tab_sub_title'),
 dcc.Graph(
     id='item-order-priority-bar',
-    style={'position': 'absolute', 'top': '1', 'right': '0', 'width': '50%', 'height': '45vh'}
+    style={'position': 'absolute', 'top': '1', 'right': '0', 'width': '50%', 'height': '40vh'}
 ),
 html.H3("Line Chart", className='Tab_sub_title'),
 dcc.Graph(
     id='line-chart',
-    style={'position': 'absolute', 'top': '58%', 'right': '0', 'width': '50%', 'height': '45vh'}
+    style={'position': 'absolute', 'top': '56%', 'right': '0', 'width': '50%', 'height': '45vh'}
 )
 ], style={'display': 'flex'})
 ],)
@@ -273,62 +275,56 @@ def update_bar_graph(clickData):
 )
 def update_charts(clickData):
     if clickData is None:
-
         default_data = data.groupby('Order Date').agg({'Total Revenue': 'sum', 'Total Profit': 'sum'}).reset_index()
         default_line_fig = px.line(default_data, x='Order Date', y=['Total Revenue', 'Total Profit'], title="Total Revenue and Profit Over the Period:",
                                    color_discrete_map={'Total Revenue': 'blue', 'Total Profit': 'red'})
-        
 
         default_line_fig.update_layout(legend=dict(x=0.98, y=1.5, xanchor='right', yanchor='top', font=dict(size=10)))
-
         default_line_fig.update_xaxes(tickformat='%Y')
         default_line_fig.update_layout(xaxis_title='Order Date', yaxis_title='Amount')
-        
-        
+
         default_order_priority_counts = data['Order Priority'].value_counts().reset_index()
         default_order_priority_counts.columns = ['Order Priority', 'Count']
-        
 
-        default_bar_fig = px.bar(default_order_priority_counts, x='Count', y='Order Priority', 
+        default_bar_fig = px.bar(default_order_priority_counts, x='Count', y='Order Priority',
                                  title="Order Priority Distribution for Item Types:", orientation='h')
-        
-        default_bar_fig.update_yaxes(title_text="Order Priority")
-        default_bar_fig.update_xaxes(title_text="Count")
+
+        default_bar_fig.update_layout(xaxis_title='Count', yaxis_title='Order Priority')
 
         # Manually set x-axis tick labels
-        default_bar_fig.update_yaxes(categoryorder='total ascending', tickvals=[0, 1, 2, 3], ticktext=["C: Critical & High", "H: High", "L: Low", "M: Medium"])
-        
+        default_bar_fig.update_yaxes(categoryorder='total ascending', tickvals=[0, 1, 2, 3],
+                                      ticktext=["C: Critical & High", "H: High", "L: Low", "M: Medium"])
+
         return default_line_fig, default_bar_fig
 
     else:
-
         selected_item_type = clickData['points'][0]['label']
         filtered_data = data[data['Item Type'] == selected_item_type]
         grouped_data = filtered_data.groupby(filtered_data['Order Date'].dt.year)[['Total Revenue', 'Total Profit']].sum().reset_index()
-        
-#line chart
-        line_fig = px.line(grouped_data, x='Order Date', y=['Total Revenue', 'Total Profit'], 
+
+        line_fig = px.line(grouped_data, x='Order Date', y=['Total Revenue', 'Total Profit'],
                            title=f'Total Revenue and Profit Over Time for {selected_item_type}',
                            color_discrete_map={'Total Revenue': 'blue', 'Total Profit': 'red'})
-        
-        line_fig.update_layout(legend=dict(x=0.98, y=1.5, xanchor='right', yanchor='top', font=dict(size=10)))
 
+        line_fig.update_layout(legend=dict(x=0.98, y=1.5, xanchor='right', yanchor='top', font=dict(size=10)))
         line_fig.update_xaxes(title_text="Year")
         line_fig.update_yaxes(title_text="Amount")
-        
+
         order_priority_counts = filtered_data['Order Priority'].value_counts().reset_index()
         order_priority_counts.columns = ['Order Priority', 'Count']
-        
-        bar_fig = px.bar(order_priority_counts, x='Count', y='Order Priority', 
+
+        bar_fig = px.bar(order_priority_counts, x='Count', y='Order Priority',
                          title=f'Order Priority Distribution for {selected_item_type}', orientation='h')
-        
+
         bar_fig.update_yaxes(title_text="Order Priority")
         bar_fig.update_xaxes(title_text="Count")
-        
+
         # Manually set x-axis tick labels
-        bar_fig.update_yaxes(categoryorder='total ascending', tickvals=[0, 1, 2, 3], ticktext=["C: Critical & High", "H: High", "L: Low", "M: Medium"])
-        
+        bar_fig.update_yaxes(categoryorder='total ascending', tickvals=[0, 1, 2, 3],
+                              ticktext=["C: Critical & High", "H: High", "L: Low", "M: Medium"])
+
         return line_fig, bar_fig
+
 
 
 if __name__ == '__main__':
