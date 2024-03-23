@@ -93,3 +93,11 @@
     color: #fe0002;
     border-radius: 15px;
 }
+/* ######slider###### */
+.custom-style {
+    width: 80%;
+    position: relative;
+    margin-bottom: 30px;
+    left: 10%;
+    display: inline-block;
+}
