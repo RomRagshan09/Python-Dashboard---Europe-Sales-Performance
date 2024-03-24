@@ -102,7 +102,15 @@
     display: inline-block;
 }
 
-/* In your external CSS file */
+/* For the dropdown option width */
 .custom-dropdown-options {
     width: 27%;  
 }
+
+
+/* For the clicked tab border radius */
+.tab--clicked {
+    border-radius: 25px; 
+  }
+  
+
