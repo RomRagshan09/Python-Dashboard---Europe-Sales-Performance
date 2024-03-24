@@ -101,3 +101,8 @@
     left: 10%;
     display: inline-block;
 }
+
+/* In your external CSS file */
+.custom-dropdown-options {
+    width: 27%;  
+}
