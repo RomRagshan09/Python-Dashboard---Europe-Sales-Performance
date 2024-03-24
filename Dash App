@@ -14,19 +14,9 @@ dropdown_options = [{'label': 'Total Revenue', 'value': 'Total Revenue'},
                     {'label': 'Total Profit', 'value': 'Total Profit'}]
 
 
-# Define product categories
-Item_Type = [
-    'Beverages', 'Clothes', 'Cereal', 'Office Supplies', 'Vegetables', 'Meat',
-    'Snacks', 'Baby Food', 'Household', 'Cosmetics', 'Personal Care', 'Fruits']
-    
-# Define dropdown options for product categories
-category_dropdown_options = [{'label': category, 'value': category} for category in Item_Type]
-
 # Initialize app
-
 app = dash.Dash(__name__,assets_folder="assets")
 app.title = "Supermarket Sales Dashboard"
-
 
 
 title = html.Div(
@@ -83,7 +73,7 @@ tab2_layout = html.Div([
             options=dropdown_options,
             value='Total Revenue',
             multi=True,            
-            style={'width': '50%', 'display': 'inline-block', 'float': 'left', 'left': '1%'}
+            className='custom-dropdown-options' 
         ),
 
         html.H3("Select Date Range:", className='Tab_sub_title'),
@@ -95,7 +85,7 @@ tab2_layout = html.Div([
              value=[data['Order Date'].min().timestamp(), data['Order Date'].max().timestamp()],
              className='custom-style'
 ),
-        dcc.Graph(id='graphoutput', style={'width': '96%', 'height': '60vh', 'margin': 'auto', 'position': 'relative', 'bottom': '30px', 'background': 'linear-gradient(135deg, #3498db, #8e44ad)'}),
+        dcc.Graph(id='graphoutput', style={'width': '96%', 'height': '50vh', 'margin': 'auto', 'position': 'relative', 'bottom': '1px', 'background': 'linear-gradient(135deg, #3498db, #8e44ad)'}),
     ])
 
 
@@ -171,7 +161,7 @@ dcc.Graph(
     style={'position': 'absolute', 'top': '56%', 'right': '0', 'width': '50%', 'height': '45vh'}
 )
 ], style={'display': 'flex'})
-],)
+])
 
 
 
