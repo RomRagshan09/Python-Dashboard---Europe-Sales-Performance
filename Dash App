@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output
 #theme and temple]ats
 import dash_bootstrap_components as dbc 
 from dash_bootstrap_templates import load_figure_template
-load_figure_template('SLATE')
+
 
 # Load dataset
 data = pd.read_csv("europe_sales_records_2012_2017.csv")
@@ -20,9 +20,10 @@ dropdown_options = [{'label': 'Total Revenue', 'value': 'Total Revenue'},
 
 
 # Initialize app
-app = dash.Dash(__name__,assets_folder="assets",external_stylesheets=[dbc.themes.SLATE])
+app = dash.Dash(__name__,assets_folder="assets",external_stylesheets=[dbc.themes.CYBORG])
 app.title = "Europe Sales Performence"
 
+load_figure_template('CYBORG')
 
 title = html.Div(
     children=[
@@ -115,7 +116,7 @@ html.H3("Select Variable:", className='Tab_sub_title'),
             style={'width': '45%','float': 'center'}
         ),
 # Scatter plot
-    dcc.Graph(id='scatter-plot', style={'width': '96%', 'height': '60vh', 'margin': 'auto', 'position': 'relative', 'top': '35px', 'background': 'linear-gradient(135deg, #3498db, #8e44ad)'}),
+    dcc.Graph(id='scatter-plot', style={'width': '96%', 'height': '60vh', 'margin': 'auto', 'position': 'relative', 'top': '35px'}),
 ])
 
 #
@@ -133,20 +134,20 @@ default_europe_map = px.choropleth(data, locations="Country", locationmode="coun
                     color="Total Revenue", color_continuous_scale=px.colors.diverging.Picnic, range_color=(0, 6000000)).update_geos(visible=False, resolution=50,
                     showcoastlines=True, showland=True, showframe=False, projection_type='equirectangular', lonaxis_range=[-25, 40], lataxis_range=[35, 70])
 #add templat
-default_europe_map.update_layout(template="SLATE")
-default_bar_graph.update_layout(template="SLATE")
+default_europe_map.update_layout(template="CYBORG")
+default_bar_graph.update_layout(template="CYBORG")
 
 
 tab4_layout = html.Div([
     dcc.Graph(
         id='europe-map',
-        style={'position': 'absolute', 'top': '4', 'left': '0', 'width': '50%', 'height': '80vh'},
+        style={'position': 'absolute', 'bottom': '6vh', 'left': '0', 'width': '50%', 'height': '70vh'},
         figure=default_europe_map
     ),
     dcc.Graph(
         id='country-item-bar',
         figure=default_bar_graph,
-        style={'position': 'absolute', 'top': '2', 'right': '0', 'width': '50%', 'height': '72vh'}
+        style={'position': 'absolute', 'bottom': '6vh', 'right': '0', 'width': '50%', 'height': '70vh'}
     ),
 ])
 
@@ -157,7 +158,7 @@ tab4_layout = html.Div([
 tab5_layout = html.Div([
     dcc.Graph(
         id='pie-chart',
-        figure=px.pie(data, names='Item Type', values='Units Sold', title='Item-Types', template="SLATE").update_traces(textinfo='percent+label', showlegend=False),
+        figure=px.pie(data, names='Item Type', values='Units Sold', title='Item-Types', template="CYBORG").update_traces(textinfo='percent+label', showlegend=False),
         style={'width': '50%', 'height': '85vh', 'float': 'left'}
 ),
 html.H3("Bar Chart", className='Tab_sub_title'),
@@ -211,7 +212,7 @@ def update_graph(selected_variables, date_range):
     end_date = pd.to_datetime(date_range[1], unit='s')
     filtered_data = data[(data['Order Date'] >= start_date) & (data['Order Date'] <= end_date)]
 
-    fig = px.line(title="Performence Over Time", template="SLATE")
+    fig = px.line(title="Performence Over Time", template="CYBORG")
 
     if isinstance(selected_variables, str):  # If only one variable is selected
         selected_variables = [selected_variables]
@@ -239,7 +240,7 @@ def update_scatter_plot(selected_variable):
 
 #scatter plot
     fig = px.scatter(data, x='Units Sold', y=selected_variable,
-                     title=f'Scatter Plot: Units Sold vs {selected_variable}')
+                     title=f'Scatter Plot: Units Sold vs {selected_variable}', template="CYBORG")
 
 #correlation
     correlation = data['Units Sold'].corr(data[selected_variable])
@@ -268,10 +269,10 @@ def update_bar_graph(clickData):
         item_counts = country_data.groupby('Item Type')['Units Sold'].sum().reset_index()
 
 #template
-        fig = px.bar(item_counts, x='Item Type', y='Units Sold', title=f'Units sold by Item in {selected_country}', template="SLATE")
+        fig = px.bar(item_counts, x='Item Type', y='Units Sold', title=f'Units sold by Item in {selected_country}', template="CYBORG")
         
         # Update layout
-        fig.update_layout( template="SLATE")
+        fig.update_layout( template="CYBORG")
 
         return fig
 ## Callback for updating scatter plot in Tab 5
@@ -281,9 +282,6 @@ def update_bar_graph(clickData):
     [Input('pie-chart', 'clickData')]
 )
 def update_charts(clickData):
-    # Define template
-    template = "SLATE"
-
     if clickData is None:
         default_data = data.groupby('Order Date').agg({'Total Revenue': 'sum', 'Total Profit': 'sum'}).reset_index()
         default_line_fig = px.line(default_data, x='Order Date', y=['Total Revenue', 'Total Profit'], title="Total Revenue and Profit Over the Period:",
@@ -292,7 +290,7 @@ def update_charts(clickData):
         default_line_fig.update_layout(legend=dict(x=0.98, y=1.5, xanchor='right', yanchor='top', font=dict(size=10)))
         default_line_fig.update_xaxes(tickformat='%Y')
         default_line_fig.update_layout(xaxis_title='Order Date', yaxis_title='Amount')
-        default_line_fig.update_layout(template=template)  # Set template
+        default_line_fig.update_layout( template="CYBORG")
 
         default_order_priority_counts = data['Order Priority'].value_counts().reset_index()
         default_order_priority_counts.columns = ['Order Priority', 'Count']
@@ -303,7 +301,7 @@ def update_charts(clickData):
         default_bar_fig.update_layout(xaxis_title='Count', yaxis_title='Order Priority')
         default_bar_fig.update_yaxes(categoryorder='total ascending', tickvals=[0, 1, 2, 3],
                                       ticktext=["C: Critical & High", "H: High", "L: Low", "M: Medium"])
-        default_bar_fig.update_layout(template=template)  # Set template
+        default_bar_fig.update_layout( template="CYBORG")
 
         return default_line_fig, default_bar_fig
 
@@ -319,7 +317,7 @@ def update_charts(clickData):
         line_fig.update_layout(legend=dict(x=0.98, y=1.5, xanchor='right', yanchor='top', font=dict(size=10)))
         line_fig.update_xaxes(title_text="Year")
         line_fig.update_yaxes(title_text="Amount")
-        line_fig.update_layout(template=template)  # Set template
+        line_fig.update_layout( template="CYBORG")
 
         order_priority_counts = filtered_data['Order Priority'].value_counts().reset_index()
         order_priority_counts.columns = ['Order Priority', 'Count']
@@ -331,7 +329,7 @@ def update_charts(clickData):
         bar_fig.update_xaxes(title_text="Count")
         bar_fig.update_yaxes(categoryorder='total ascending', tickvals=[0, 1, 2, 3],
                               ticktext=["C: Critical & High", "H: High", "L: Low", "M: Medium"])
-        bar_fig.update_layout(template=template)  # Set template
+        bar_fig.update_layout( template="CYBORG")  # Set template
 
         return line_fig, bar_fig
 
