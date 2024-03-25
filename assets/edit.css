@@ -70,12 +70,23 @@
 /* ######Tab2###### */
 .Tab_sub_title {
     font-size: 20px;
-    text-align: center;
+    text-align: left;
     font-weight: bold;
-    color: black;
+    color: rgb(254, 254, 254);
     margin: 6px;
     padding: 4px;
 }
+
+/* ######Tab2###### */
+.dt {
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+    color: rgb(254, 254, 254);
+    margin: 6px;
+    padding: 4px;
+}
+
 
 .Tab_bar {
     background-color: #00ffff;
@@ -100,6 +111,7 @@
     margin-bottom: 0px;
     left: 10%;
     display: inline-block;
+    color: #f6030f;
 }
 
 /* For the dropdown option width */
