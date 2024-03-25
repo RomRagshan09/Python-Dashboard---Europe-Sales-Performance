@@ -3,13 +3,11 @@ from dash import dcc, html
 import pandas as pd
 import plotly.express as px
 from dash.dependencies import Input, Output
-
-#theme and temple]ats
 import dash_bootstrap_components as dbc 
 from dash_bootstrap_templates import load_figure_template
 
 
-# Load dataset
+# dataset
 data = pd.read_csv("europe_sales_records_2012_2017.csv")
 data['Order Date'] = pd.to_datetime(data['Order Date'])
 
@@ -19,19 +17,17 @@ dropdown_options = [{'label': 'Total Revenue', 'value': 'Total Revenue'},
                     {'label': 'Total Profit', 'value': 'Total Profit'}]
 
 
-# Initialize app
+# Initialize the app
 app = dash.Dash(__name__,assets_folder="assets",external_stylesheets=[dbc.themes.SLATE])
 app.title = "Europe Sales Performence"
 
 load_figure_template('CYBORG')
 
 title = html.Div(
-    children=[
-        html.H1(
-            "Europe Sales Performence",
+    html.H1( "Europe Sales Performence",
             className='supermarket-title'
         )
-    ]
+    
 )
 
 
@@ -48,10 +44,6 @@ footer = html.Div(
     className='footer-container',
 )
 
-
-# Define tab content
-#
-#
 # Tab 1
 tab1_layout = html.Div(
     children=[
@@ -59,7 +51,7 @@ tab1_layout = html.Div(
         html.P("This dashboard provides insights into the performance and profitability of sales across countries in the Europe region from the period of 2010 to 2017.", className='HP'),
         html.P("The dataset used in this analysis contains records from multiple sales and includes details on order dates, quantities sold, pricing, and profitability.",  className='HP'),
 
-        html.H3("Through this analysis, the supermarket can effectively:", className='H3'),
+        html.H3("Through this analysis, the company can effectively:", className='H3'),
         html.Ul( className='Hl',
                 children=[
                     html.Li("Analyze which item types generate the most revenue in each country,"),
@@ -83,20 +75,20 @@ tab2_layout = html.Div(
             options=dropdown_options,
             value='Total Revenue',
             multi=True,
-            style={'width': '420px',  'left':'2%', 'color': 'black'},
-            className='custom-dropdown'  # Adjusted width and aligned to left
+            style={'width': '420px',  'left':'2%', 'color': 'black', 'margin-top': '30px'},
+            className='custom-dropdown'  
         ),
 
         dcc.Graph(
             id='graphoutput',
-            style={'width': '100%', 'height': '50vh', 'position': 'relative', 'bottom': '0px','margin': '1px 5px 30px 5px','margin-top': '10px'}
+            style={'width': '99%', 'height': '50vh', 'position': 'relative', 'bottom': '0px','margin': '1px 5px 30px 5px','margin-top': '25px'}
         ),
 
         dcc.RangeSlider(
             id='date-slider',
             min=data['Order Date'].min().timestamp(),
             max=data['Order Date'].max().timestamp(),
-            marks={int(date.timestamp()): {'label': date.strftime('%m/%Y'), 'style': {'color': 'red', 'font-weight': 'bold'}} for date in pd.date_range(start=data['Order Date'].min(), end=data['Order Date'].max(), freq='6M')},
+            marks={int(date.timestamp()): {'label': date.strftime('%m/%Y'), 'style': {'color': '#05F0F8', 'font-weight': 'bold'}} for date in pd.date_range(start=data['Order Date'].min(), end=data['Order Date'].max(), freq='6M')},
             value=[data['Order Date'].min().timestamp(), data['Order Date'].max().timestamp()],
             className='custom-style',
         ),
@@ -106,44 +98,36 @@ tab2_layout = html.Div(
 
 
 
-#
-#
+
 # Tab 3
 tab3_layout = html.Div([
-    # Centered title
-    html.Div(style={'display': 'flex', 'justify-content': 'center'}, children=[
-        html.H3(className='Tab_sub_title3'),
-    ]),
-    # Centered radio button options with adjusted margin-right
-    html.Div(style={'display': 'flex', 'justify-content': 'center', 'margin-top': '30px'}, children=[
-        dcc.RadioItems(
-            id='variable-radio',
-            options=dropdown_options,
-            value='Total Revenue',
-            labelStyle={'display': 'inline-block', 'margin-right': '18%', 'color': '#067FB9'}, 
-            style={'width': '45%'},
-             className='custom-radio-label'
-        ),
-    ]),
-# Scatter plot
+    dcc.RadioItems(
+        id='variable-radio',
+        options=dropdown_options,
+        value='Total Revenue',
+        labelStyle={'display': 'inline-block', 'margin-right': '18%', 'color': '#32FF92','margin-top': '30px' }, 
+        style={'width': '45%','margin-left': '32%'}
+    ),
     dcc.Graph(id='scatter-plot', style={'width': '96%', 'height': '60vh', 'margin': 'auto', 'position': 'relative', 'top': '30px'}),
 ])
 
-#
-#
+
 # Tab 4
 
-# Define graphs
+# Defining the graphs
 default_item_counts = data.groupby('Item Type')['Units Sold'].sum().reset_index()
 default_bar_graph = px.bar(default_item_counts, x='Item Type', y='Units Sold', title="Units sold by Item",
                             labels={'x': 'Item Type', 'y': 'Units Sold'})
 
+default_bar_graph.update_traces(marker_color='#5EADFE')
+
+
 #default map
-default_europe_map = px.choropleth(data, locations="Country", locationmode="country names", hover_name="Country", title="Country-wise Revenue",
-#set the map                    
+default_europe_map = px.choropleth(data, locations="Country", locationmode="country names",  title="Country-wise Revenue",
+#setting up the map                    
                     color="Total Revenue", color_continuous_scale=px.colors.diverging.Picnic, range_color=(0, 6000000)).update_geos(visible=False, resolution=50,
                     showcoastlines=True, showland=True, showframe=False, projection_type='equirectangular', lonaxis_range=[-8, 42], lataxis_range=[35, 70])
-#add templat
+
 default_europe_map.update_layout(template="plotly_dark")
 default_bar_graph.update_layout(template="plotly_dark")
 
@@ -161,57 +145,45 @@ tab4_layout = html.Div([
     ),
 ])
 
-#
-#
-#
 # Tab 5
 tab5_layout = html.Div([
     dcc.Graph(
         id='pie-chart',
         figure=px.pie(data, names='Item Type', values='Units Sold', title='Item-Types', template="plotly_dark").update_traces(textinfo='percent+label', showlegend=False),
-        style={'width': '50%', 'height': '81vh', 'float': 'left'}
+        style={'width': '50%', 'height': '89vh', 'float': 'left'}
 ),
-html.H3("Bar Chart", className='Tab_sub_title'),
+html.H3(className='Tab_sub_title'),
     dcc.Graph(
        id='item-order-priority-bar',
-       style={'position': 'absolute', 'top': '1', 'right': '0', 'width': '50%', 'height': '41vh'}
+       style={'position': 'absolute', 'top': '1', 'right': '0', 'width': '50%', 'height': '44.7vh'}
 ),
-html.H3("Line Chart", className='Tab_sub_title'),
+html.H3(className='Tab_sub_title'),
     dcc.Graph(
        id='line-chart',
-       style={'position': 'absolute', 'top': '58%', 'right': '0', 'width': '50%', 'height': '44.8vh'}
+       style={'position': 'absolute', 'top': '63%', 'right': '0', 'width': '50%', 'height': '44.8vh'}
 )
 ], style={'display': 'flex'})
 
 
 
 
-# Define tabs
+# Defining the tabs
 tabs = dcc.Tabs(id='tabs', value='tab-1', children=[
     dcc.Tab(label='INTRODUCTION', value='tab-1', children=tab1_layout,className= 'tab--clicked', style={'backgroundColor': '#00ffff', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
     dcc.Tab(label='Profits & Trends', value='tab-2', children=tab2_layout, className= 'tab--clicked', style={'backgroundColor': '#00ffff', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
-    dcc.Tab(label='Sales Perform:', value='tab-3', children=tab3_layout,className= 'tab--clicked', style={'backgroundColor': '#00ffff', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
+    dcc.Tab(label='Sales Performe', value='tab-3', children=tab3_layout,className= 'tab--clicked', style={'backgroundColor': '#00ffff', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
     dcc.Tab(label='Sales by Country', value='tab-4', children=tab4_layout,className= 'tab--clicked', style={'backgroundColor': '#00ffff', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
     dcc.Tab(label='Priority & Profits', value='tab-5', children=tab5_layout,className= 'tab--clicked', style={'backgroundColor': '#00ffff', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
 ], style={'fontFamily': 'Times New Roman',  'padding': '5px', 'width': '60%', 'margin': 'auto', 'backgroundColor': '#1b2431', 'color': '#fe0002', 'border-radius': '15px'})
 
 
 # Layout of the app
-app.layout = html.Div(
-    children=[
-        html.Div(  # Container with gradient background
-
-            children=[
-                title,
-                footer,
-                tabs
-            ]
+app.layout = html.Div( 
+            children=[title,footer,tabs]
         )
-    ]
-)
 
 
-# Callback for updating line graph in Tab 2
+# Callback updating line graph Tab 2
 @app.callback(
     Output('graphoutput', 'figure'),
     [Input('Line-variable-dropdown', 'value'),
@@ -224,7 +196,8 @@ def update_graph(selected_variables, date_range):
 
     fig = px.line(title="Performance Over Time", template="plotly_dark")
 
-    if isinstance(selected_variables, str):  # If only one variable is selected
+#for only select one variable
+    if isinstance(selected_variables, str):  
         selected_variables = [selected_variables]
 
     color_dict = {'Total Revenue': 'red', 'Total Cost': 'lightblue', 'Total Profit': 'lightgreen'}
@@ -234,18 +207,18 @@ def update_graph(selected_variables, date_range):
         fig.add_scatter(x=grouped_data['Order Date'], y=grouped_data[variable], mode='lines', name=variable.capitalize(),
                         line=dict(color=color_dict.get(variable, 'black'), width=3))
 
-    fig.update_layout(plot_bgcolor='#d7fffd')
+    
     fig.update_xaxes(title_text="Year")
-    fig.update_layout(plot_bgcolor='black')
+    
 
-    # Assuming you want to handle the y-axis label for each selected variable
+    #  y-axis label for each selected variable accordingly
     for variable in selected_variables:
         fig.update_yaxes(title_text=variable.capitalize())
 
     return fig
 
 
-# Callback for updating scatter plot in Tab 3
+# Callback updating scatter plot Tab 3
 @app.callback(
     Output('scatter-plot','figure'),
     [Input('variable-radio','value')]
@@ -255,23 +228,21 @@ def update_scatter_plot(selected_variable):
 #scatter plot
     fig = px.scatter(data, x='Units Sold', y=selected_variable,
                      title=f'Scatter Plot: Units Sold vs {selected_variable}', template="plotly_dark",
-                     color_discrete_sequence=['red'])
+                     color_discrete_sequence=['#FF0D0D'])
 
-#correlation
+#correlation findings
     correlation = data['Units Sold'].corr(data[selected_variable])
 
  #Update layout
     fig.update_layout(title=f'Scatter Plot: Units Sold vs {selected_variable} (Correlation: {correlation:.2f})')
     fig.update_xaxes(title_text="Unit Sold")
-    fig.update_layout(plot_bgcolor='#d7fffd')
     fig.update_yaxes(title_text=selected_variable.capitalize())
-    fig.update_layout(plot_bgcolor='black')
 
     return fig
 
 
 
-# Callback for updating scatter plot in Tab 4
+# Callback map & bar Tab 4
 @app.callback(
     Output('country-item-bar', 'figure'),
     [Input('europe-map', 'clickData')]
@@ -284,14 +255,13 @@ def update_bar_graph(clickData):
         country_data = data[data['Country'] == selected_country]
         item_counts = country_data.groupby('Item Type')['Units Sold'].sum().reset_index()
 
-#template
         fig = px.bar(item_counts, x='Item Type', y='Units Sold', title=f'Units sold by Item in {selected_country}', template="plotly_dark")
-        
-        # Update layout
+        fig.update_traces(marker_color='#5EADFE')
         fig.update_layout( template="plotly_dark")
+    
 
         return fig
-## Callback for updating scatter plot in Tab 5
+# Callback update ie, bar & line in Tab 5
 @app.callback(
     [Output('line-chart', 'figure'),
      Output('item-order-priority-bar', 'figure')],
@@ -301,8 +271,8 @@ def update_charts(clickData):
     if clickData is None:
         default_data = data.groupby('Order Date').agg({'Total Revenue': 'sum', 'Total Profit': 'sum'}).reset_index()
         default_line_fig = px.line(default_data, x='Order Date', y=['Total Revenue', 'Total Profit'], title="Total Revenue and Profit Over the Period:",
-                                   color_discrete_map={'Total Revenue': 'blue', 'Total Profit': 'red'})
-
+                                   color_discrete_map={'Total Revenue': 'red', 'Total Profit': '#08FC10'})
+        
         default_line_fig.update_layout(legend=dict(x=0.98, y=1.5, xanchor='right', yanchor='top', font=dict(size=10)))
         default_line_fig.update_xaxes(tickformat='%Y')
         default_line_fig.update_layout(xaxis_title='Order Date', yaxis_title='Amount')
@@ -328,7 +298,7 @@ def update_charts(clickData):
 
         line_fig = px.line(grouped_data, x='Order Date', y=['Total Revenue', 'Total Profit'],
                            title=f'Total Revenue and Profit Over Time for {selected_item_type}',
-                           color_discrete_map={'Total Revenue': 'blue', 'Total Profit': 'red'})
+                           color_discrete_map={'Total Revenue': 'red', 'Total Profit': '#08FC10'})
 
         line_fig.update_layout(legend=dict(x=0.98, y=1.5, xanchor='right', yanchor='top', font=dict(size=10)))
         line_fig.update_xaxes(title_text="Year")
@@ -345,8 +315,7 @@ def update_charts(clickData):
         bar_fig.update_xaxes(title_text="Count")
         bar_fig.update_yaxes(categoryorder='total ascending', tickvals=[0, 1, 2, 3],
                               ticktext=["C: Critical & High", "H: High", "L: Low", "M: Medium"])
-        bar_fig.update_layout( template="plotly_dark")  # Set template
-
+        bar_fig.update_layout( template="plotly_dark")  
         return line_fig, bar_fig
 
 
