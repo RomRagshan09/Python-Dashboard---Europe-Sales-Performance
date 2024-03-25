@@ -88,7 +88,6 @@
     padding: 4px;
 }
 
-
 .Tab_bar {
     background-color: #00ffff;
     color: black;
@@ -96,6 +95,7 @@
     font-weight: bold;
     border-radius: 25px;
 }
+
 .Tab_layout {
     font-family: Times New Roman;
     padding: 5px;
