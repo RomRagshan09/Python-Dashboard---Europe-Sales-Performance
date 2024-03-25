@@ -44,6 +44,7 @@ footer = html.Div(
     className='footer-container',
 )
 
+#
 # Tab 1
 tab1_layout = html.Div(
     children=[
@@ -97,8 +98,8 @@ tab2_layout = html.Div(
 )
 
 
-
-
+#
+#
 # Tab 3
 tab3_layout = html.Div([
     dcc.RadioItems(
@@ -112,6 +113,8 @@ tab3_layout = html.Div([
 ])
 
 
+#
+#
 # Tab 4
 
 # Defining the graphs
@@ -127,7 +130,7 @@ default_europe_map = px.choropleth(data, locations="Country", locationmode="coun
 #setting up the map                    
                     color="Total Revenue", color_continuous_scale=px.colors.diverging.Picnic, range_color=(0, 6000000)).update_geos(visible=False, resolution=50,
                     showcoastlines=True, showland=True, showframe=False, projection_type='equirectangular', lonaxis_range=[-8, 42], lataxis_range=[35, 70])
-
+#add templet for
 default_europe_map.update_layout(template="plotly_dark")
 default_bar_graph.update_layout(template="plotly_dark")
 
@@ -145,22 +148,23 @@ tab4_layout = html.Div([
     ),
 ])
 
+#
 # Tab 5
 tab5_layout = html.Div([
     dcc.Graph(
         id='pie-chart',
         figure=px.pie(data, names='Item Type', values='Units Sold', title='Item-Types', template="plotly_dark").update_traces(textinfo='percent+label', showlegend=False),
-        style={'width': '50%', 'height': '89vh', 'float': 'left'}
+        style={'width': '50%', 'height': '80vh', 'float': 'left'}
 ),
 html.H3(className='Tab_sub_title'),
     dcc.Graph(
        id='item-order-priority-bar',
-       style={'position': 'absolute', 'top': '1', 'right': '0', 'width': '50%', 'height': '44.7vh'}
+       style={'position': 'absolute', 'top': '1', 'right': '0', 'width': '50%', 'height': '40vh'}
 ),
 html.H3(className='Tab_sub_title'),
     dcc.Graph(
        id='line-chart',
-       style={'position': 'absolute', 'top': '63%', 'right': '0', 'width': '50%', 'height': '44.8vh'}
+       style={'position': 'absolute', 'top': '58.7%', 'right': '0', 'width': '50%', 'height': '40vh'}
 )
 ], style={'display': 'flex'})
 
@@ -183,6 +187,8 @@ app.layout = html.Div(
         )
 
 
+#
+#
 # Callback updating line graph Tab 2
 @app.callback(
     Output('graphoutput', 'figure'),
@@ -214,10 +220,11 @@ def update_graph(selected_variables, date_range):
     #  y-axis label for each selected variable accordingly
     for variable in selected_variables:
         fig.update_yaxes(title_text=variable.capitalize())
-
     return fig
 
 
+#
+#
 # Callback updating scatter plot Tab 3
 @app.callback(
     Output('scatter-plot','figure'),
@@ -240,8 +247,8 @@ def update_scatter_plot(selected_variable):
 
     return fig
 
-
-
+#
+#
 # Callback map & bar Tab 4
 @app.callback(
     Output('country-item-bar', 'figure'),
@@ -258,10 +265,11 @@ def update_bar_graph(clickData):
         fig = px.bar(item_counts, x='Item Type', y='Units Sold', title=f'Units sold by Item in {selected_country}', template="plotly_dark")
         fig.update_traces(marker_color='#5EADFE')
         fig.update_layout( template="plotly_dark")
-    
-
         return fig
-# Callback update ie, bar & line in Tab 5
+
+#
+#
+# Callback update Tab 5
 @app.callback(
     [Output('line-chart', 'figure'),
      Output('item-order-priority-bar', 'figure')],
