@@ -169,11 +169,11 @@ html.H3(className='Tab_sub_title'),
 
 # Defining the tabs
 tabs = dcc.Tabs(id='tabs', value='tab-1', children=[
-    dcc.Tab(label='INTRODUCTION', value='tab-1', children=tab1_layout,className= 'tab--clicked', style={'backgroundColor': '#00ffff', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
-    dcc.Tab(label='Profits & Trends', value='tab-2', children=tab2_layout, className= 'tab--clicked', style={'backgroundColor': '#00ffff', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
-    dcc.Tab(label='Sales Performe', value='tab-3', children=tab3_layout,className= 'tab--clicked', style={'backgroundColor': '#00ffff', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
-    dcc.Tab(label='Sales by Country', value='tab-4', children=tab4_layout,className= 'tab--clicked', style={'backgroundColor': '#00ffff', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
-    dcc.Tab(label='Priority & Profits', value='tab-5', children=tab5_layout,className= 'tab--clicked', style={'backgroundColor': '#00ffff', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
+    dcc.Tab(label='INTRODUCTION', value='tab-1', children=tab1_layout,className= 'tab--clicked', style={'backgroundColor': '#5EADFE', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
+    dcc.Tab(label='Profits & Trends', value='tab-2', children=tab2_layout, className= 'tab--clicked', style={'backgroundColor': '#5EADFE', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
+    dcc.Tab(label='Sales Performe', value='tab-3', children=tab3_layout,className= 'tab--clicked', style={'backgroundColor': '#5EADFE', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
+    dcc.Tab(label='Sales by Country', value='tab-4', children=tab4_layout,className= 'tab--clicked', style={'backgroundColor': '#5EADFE', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
+    dcc.Tab(label='Priority & Profits', value='tab-5', children=tab5_layout,className= 'tab--clicked', style={'backgroundColor': '#5EADFE', 'color': 'black', 'font-size': '13px', 'font-weight': 'bold', 'border-radius': '25px'}),
 ], style={'fontFamily': 'Times New Roman',  'padding': '5px', 'width': '60%', 'margin': 'auto', 'backgroundColor': '#1b2431', 'color': '#fe0002', 'border-radius': '15px'})
 
 
