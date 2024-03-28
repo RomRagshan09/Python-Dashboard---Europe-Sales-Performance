@@ -33,16 +33,10 @@ title = html.Div(
 
 # Add footer
 footer = html.Div(
-    children=[
-        html.Div(
             children=[
                 html.P('Designed By: N.ARJUN -005 & C.RAGSHAN -009', className='footer-text'),
             ],
-            className='footer-content'
-        )
-    ],
-    className='footer-container',
-)
+    className='footer-container')
 
 # Tab 1
 tab1_layout = html.Div(
