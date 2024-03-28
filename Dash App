@@ -3,6 +3,7 @@ from dash import dcc, html
 import pandas as pd
 import plotly.express as px
 from dash.dependencies import Input, Output
+
 import dash_bootstrap_components as dbc 
 from dash_bootstrap_templates import load_figure_template
 
@@ -188,7 +189,7 @@ def update_graph(selectedvaria, date_range):
     enddate = pd.to_datetime(date_range[1], unit='s')
     filteredata = data[(data['Order Date'] >= startdate) & (data['Order Date'] <= enddate)]
 
-    fig = px.line(title="Performance Over Time", template="plotly_dark")
+    fig = px.line(title=f'Performance Over Time for {selectedvaria}', template="plotly_dark")
 
 #for only select one variable
     if isinstance(selectedvaria, str):  
@@ -202,8 +203,7 @@ def update_graph(selectedvaria, date_range):
     
     fig.update_xaxes(title_text="Year")
     
-
-    #  y-axis label for each selected variable accordingly
+# y-axis label for each selected variable accordingly
     for variable in selectedvaria:
         fig.update_yaxes(title_text=variable.capitalize())
 
@@ -251,8 +251,9 @@ def update_bar_graph(clickData):
         fig.update_traces(marker_color='#5EADFE')
         fig.update_layout( template="plotly_dark")
     
-
         return fig
+    
+    
 # Callback update ie, bar & line in Tab 5
 @app.callback(
     [Output('line-chart', 'figure'),
