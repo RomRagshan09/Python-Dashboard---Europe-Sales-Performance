@@ -3,7 +3,7 @@ from dash import dcc, html
 import pandas as pd
 import plotly.express as px
 from dash.dependencies import Input, Output
-
+# Library for theme and template
 import dash_bootstrap_components as dbc 
 from dash_bootstrap_templates import load_figure_template
 
